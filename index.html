@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Экопросвещение | Республика Адыгея</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --primary-dark: #1b4332;
+      --primary-light: #40916c;
+      --accent: #d4a373;
+      --glass: rgba(255, 255, 255, 0.15);
+      --glass-scrolled: rgba(255, 255, 255, 0.92);
+      --text-muted: #52796f;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-slow: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --nav-height: 72px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: #f4f6f8; 
+      color: #1b4332;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ===== АНИМАЦИИ ===== */
+    @keyframes ornament-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
+    @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(45, 106, 79, 0.3); } 50% { box-shadow: 0 0 20px rgba(45, 106, 79, 0.6), 0 0 30px rgba(45, 106, 79, 0.4); } }
+    @keyframes kenBurns { 0% { transform: scale(1.15) translate(0, 0); } 100% { transform: scale(1.25) translate(-2%, -2%); } }
+    @keyframes floatUp { from { opacity: 0; transform: translateY(30px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scrollBounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ======================================== НАВИГАЦИЯ ======================================== */
+    .navbar { position: fixed; top: 0; left: 0; right: 0; width: 100%; height: var(--nav-height); z-index: 10000; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); transition: height 0.35s var(--ease), background 0.35s var(--ease), box-shadow 0.35s var(--ease), backdrop-filter 0.35s var(--ease), transform 0.35s var(--ease); overflow: visible; }
+    .navbar.hidden { transform: translateY(-100%); pointer-events: none; }
+    .navbar.scrolled { height: 56px; background: var(--glass-scrolled); box-shadow: 0 8px 28px rgba(27, 67, 50, 0.12); border-bottom-color: rgba(45, 106, 79, 0.15); backdrop-filter: blur(14px) saturate(160%); }
+    .navbar::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%232d6a4f' stroke-width='1.5'/%3E%3Cpath d='M20 10 L30 20 L20 30 L10 20 Z' fill='none' stroke='%232d6a4f' stroke-width='1'/%3E%3Cline x1='0' y1='0' x2='40' y2='40' stroke='%232d6a4f' stroke-width='0.8' opacity='0.6'/%3E%3Cline x1='40' y1='0' x2='0' y2='40' stroke='%232d6a4f' stroke-width='0.8' opacity='0.6'/%3E%3Ccircle cx='20' cy='20' r='2' fill='%232d6a4f'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.15; pointer-events: none; will-change: transform; z-index: 0; animation: ornament-scroll 18s linear infinite; }
+    .navbar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: left 0.7s; pointer-events: none; z-index: 1; }
+    .navbar:hover::after { left: 100%; }
+
+    .nav-container { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; height: 100%; }
+    .logo { text-decoration: none; display: flex; align-items: center; gap: 0.8rem; transition: transform 0.3s var(--ease); }
+    .logo:hover { transform: scale(1.02); opacity: 0.9; }
+    
+    /* Стили для нового логотипа */
+    .site-logo-img { 
+        width: 44px; height: 44px; border-radius: 11px; 
+        object-fit: cover; 
+        box-shadow: 0 3px 10px rgba(45, 106, 79, 0.25); 
+        transition: all 0.35s var(--ease);
+        background-color: #fff; /* Фон на случай, если картинка с прозрачностью */
+    }
+    .navbar.scrolled .site-logo-img { 
+        width: 34px; height: 34px; border-radius: 8px; 
+        animation: none; 
+    }
+
+    .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-main { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: all 0.35s var(--ease); }
+    .navbar.scrolled .logo-main { font-size: 1.1rem; color: var(--primary); text-shadow: none; }
+    .logo-sub { font-size: 0.65rem; font-weight: 500; color: rgba(255,255,255,0.8); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 1px; transition: all 0.35s var(--ease); }
+    .navbar.scrolled .logo-sub { font-size: 0.55rem; color: var(--text-muted); opacity: 0.85; }
+
+    .nav-links { display: flex; gap: 0.7rem; list-style: none; align-items: center; flex-wrap: wrap; }
+    .nav-links a { text-decoration: none; color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.92rem; padding: 0.5rem 1.2rem; border-radius: 24px; border: 1.5px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); transition: all 0.3s var(--ease); display: inline-flex; align-items: center; text-shadow: 0 1px 4px rgba(0,0,0,0.2); position: relative; overflow: hidden; z-index: 1; }
+    .nav-links a::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.3); transform: translate(-50%, -50%); transition: width 0.6s, height 0.6s; }
+    .nav-links a:hover::before { width: 300px; height: 300px; }
+    .navbar.scrolled .nav-links a { color: var(--primary); border-color: rgba(45, 106, 79, 0.35); background: rgba(255, 255, 255, 0.45); text-shadow: none; }
+    .nav-links a:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(45, 106, 79, 0.25); }
+    .nav-links a.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 3px 12px rgba(45, 106, 79, 0.2); animation: glow 2s ease-in-out infinite; }
+    .navbar.scrolled .nav-links a { padding: 0.35rem 0.9rem; font-size: 0.88rem; border-width: 1.2px; }
+
+    /* Выпадающий список */
+    .dropdown-wrapper { position: relative; }
+    .dropdown-toggle { cursor: pointer; }
+    .dropdown-toggle::after { content: ' ▾'; font-size: 0.75rem; transition: transform 0.3s var(--ease); }
+    .dropdown-toggle.active::after { transform: rotate(180deg); }
+    .dropdown-menu { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(-10px); background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); border-radius: 18px; box-shadow: 0 20px 50px rgba(27, 67, 50, 0.18), 0 0 0 1px rgba(45,106,79,0.08); padding: 0.8rem; min-width: 320px; max-height: 450px; overflow-y: auto; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.35s var(--ease); z-index: 10001; }
+    .dropdown-menu.active { opacity: 1; visibility: visible; pointer-events: all; transform: translateX(-50%) translateY(0); }
+    .dropdown-menu::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 16px; height: 16px; background: rgba(255, 255, 255, 0.98); border-radius: 3px; }
+    .dropdown-header { padding: 0.5rem 0.8rem 0.8rem; border-bottom: 1px solid rgba(45,106,79,0.1); margin-bottom: 0.5rem; }
+    .dropdown-header h4 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--primary-dark); margin: 0; }
+    .dropdown-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 0.8rem; border-radius: 12px; cursor: pointer; transition: all 0.25s var(--ease); text-decoration: none; color: var(--primary-dark); position: relative; overflow: hidden; }
+    .dropdown-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--primary); transform: scaleY(0); transition: transform 0.3s var(--ease); }
+    .dropdown-item:hover::before { transform: scaleY(1); }
+    .dropdown-item:hover { background: rgba(45, 106, 79, 0.08); transform: translateX(4px); }
+    .dropdown-item-icon { width: 44px; height: 44px; border-radius: 10px; background-size: cover; background-position: center; flex-shrink: 0; box-shadow: 0 3px 8px rgba(0,0,0,0.12); transition: transform 0.3s var(--ease); }
+    .dropdown-item:hover .dropdown-item-icon { transform: scale(1.1) rotate(2deg); }
+    .dropdown-item-text h5 { font-size: 0.9rem; font-weight: 600; color: var(--primary-dark); margin: 0 0 0.15rem 0; line-height: 1.2; }
+    .dropdown-item-text span { font-size: 0.75rem; color: var(--text-muted); display: block; }
+    .dropdown-item-badge { margin-left: auto; background: var(--primary); color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600; flex-shrink: 0; white-space: nowrap; transition: all 0.3s var(--ease); }
+    .dropdown-item:hover .dropdown-item-badge { transform: scale(1.1); background: var(--accent); }
+
+    .mobile-menu { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; background: none; border: none; padding: 0.4rem; transition: transform 0.2s var(--ease); text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+    .mobile-menu:hover { transform: scale(1.1); }
+    .navbar.scrolled .mobile-menu { color: var(--primary); text-shadow: none; }
+    .mobile-menu:active { transform: scale(0.9) rotate(90deg); }
+
+    @media (max-width: 768px) {
+      .nav-links { position: absolute; top: 100%; left: 0; width: 100%; background: var(--glass-scrolled); backdrop-filter: blur(16px); flex-direction: column; padding: 1rem 2rem; gap: 0.8rem; transform: translateY(-15px); opacity: 0; pointer-events: none; transition: all 0.4s var(--ease); box-shadow: 0 12px 28px rgba(0,0,0,0.08); }
+      .nav-links.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+      .nav-links a { width: 100%; justify-content: center; padding: 0.6rem; }
+      .dropdown-wrapper { width: 100%; }
+      .dropdown-toggle { width: 100%; justify-content: center; }
+      .dropdown-menu { position: relative; top: 0; left: 0; transform: translateY(-10px); min-width: 100%; max-height: none; box-shadow: none; background: rgba(45,106,79,0.05); }
+      .dropdown-menu::before { display: none; }
+      .mobile-menu { display: block; }
+    }
+
+    /* ======================================== СЛАЙД-ШОУ ГЛАВНОЕ ======================================== */
+    #slideshow { position: relative; width: 100%; height: 100vh; overflow: hidden; background: #1b4332; margin: 0; padding: 0; }
+    .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.8s var(--ease-slow); display: flex; align-items: center; justify-content: center; will-change: opacity; }
+    .slide::before { content: ''; position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: inherit; background-size: cover; background-position: center center; background-repeat: no-repeat; animation: kenBurns 25s infinite alternate ease-in-out; opacity: 0.9; will-change: transform; }
+    .slide.active { opacity: 1; z-index: 1; }
+    .slide::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(27,67,50,0.3) 0%, rgba(27,67,50,0.2) 40%, rgba(27,67,50,0.7) 100%); z-index: 1; }
+    .slide-content { position: relative; z-index: 3; text-align: center; color: white; padding: calc(var(--nav-height) + 2rem) 3rem 2rem; max-width: 1000px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    .slide-content h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 6.5vw, 5rem); margin: 0 0 1rem 0; text-shadow: 0 4px 24px rgba(0,0,0,0.6); line-height: 1.1; letter-spacing: -0.02em; }
+    .slide-content .title-divider { width: 90px; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); margin: 0 auto 1.2rem; border-radius: 2px; }
+    .slide-content .slide-subtitle { font-size: clamp(1.1rem, 2.5vw, 1.4rem); text-shadow: 0 2px 10px rgba(0,0,0,0.5); opacity: 0.95; line-height: 1.5; max-width: 650px; font-weight: 400; }
+    .slide-counter { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 0.5rem 1.8rem; border-radius: 30px; z-index: 10; color: white; font-weight: 600; border: 1px solid rgba(255,255,255,0.25); font-size: 0.9rem; }
+    .slide-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 50%; width: 58px; height: 58px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer; z-index: 10; transition: all 0.4s var(--ease); user-select: none; }
+    .slide-nav:hover { background: rgba(255, 255, 255, 0.35); transform: translateY(-50%) scale(1.12); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+    .slide-nav:active { transform: translateY(-50%) scale(0.96); transition-duration: 0.12s; }
+    .slide-nav.prev { left: 35px; } .slide-nav.next { right: 35px; }
+    .scroll-down-btn { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.35); width: 58px; height: 58px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: scrollBounce 2.5s infinite, fadeIn 1.5s 0.5s both; display: flex; align-items: center; justify-content: center; transition: all 0.4s var(--ease); }
+    .scroll-down-btn:hover { background: rgba(255, 255, 255, 0.4); transform: translateX(-50%) scale(1.12); }
+    @media (max-width: 768px) { .slide-content { padding-top: calc(var(--nav-height) + 1.5rem); } .slide-content h1 { font-size: 2.6rem; } .slide-nav { width: 46px; height: 46px; font-size: 1.2rem; } .slide-nav.prev { left: 18px; } .slide-nav.next { right: 18px; } .scroll-down-btn { width: 50px; height: 50px; bottom: 30px; } }
+
+    /* ======================================== О ЗАПОВЕДНИКЕ & КАРТОЧКИ ======================================== */
+    .reserve-overview { background: #fff; padding: 6rem 2rem; position: relative; }
+    .reserve-overview::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(45,106,79,0.2), transparent); }
+    .overview-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .overview-content { animation: fadeInUp 0.8s var(--ease) both; }
+    .overview-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%); color: white; padding: 0.5rem 1.4rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; transition: all 0.3s var(--ease); }
+    .overview-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(45, 106, 79, 0.3); }
+    .overview-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 2.8rem); color: var(--primary-dark); margin-bottom: 1.5rem; line-height: 1.2; }
+    .overview-text { color: var(--text-muted); font-size: 1.05rem; line-height: 1.8; margin-bottom: 1.5rem; }
+    .overview-image { animation: fadeInUp 0.8s var(--ease) both; animation-delay: 0.2s; }
+    .image-wrapper { position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(27,67,50,0.15); transition: all 0.4s var(--ease); }
+    .image-wrapper:hover { box-shadow: 0 25px 70px rgba(27,67,50,0.25); transform: translateY(-5px); }
+    .image-wrapper img { width: 100%; height: 500px; object-fit: cover; display: block; transition: transform 0.6s var(--ease); }
+    .image-wrapper:hover img { transform: scale(1.05); }
+    .image-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(to top, rgba(27,67,50,0.9), transparent); color: white; transition: all 0.3s var(--ease); }
+    .image-wrapper:hover .image-overlay { padding-bottom: 2.5rem; }
+    .image-overlay h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .image-overlay p { font-size: 0.95rem; opacity: 0.9; }
+    @media (max-width: 992px) { .overview-container { grid-template-columns: 1fr; gap: 3rem; } .image-wrapper img { height: 400px; } }
+
+    .other-reserves { background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); padding: 6rem 2rem; }
+    .reserves-header { text-align: center; max-width: 700px; margin: 0 auto 4rem; }
+    .reserves-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 2.8rem); color: var(--primary-dark); margin-bottom: 1rem; }
+    .reserves-subtitle { color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; }
+    .reserves-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
+    .reserve-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(27,67,50,0.08); transition: all 0.4s var(--ease); animation: fadeInUp 0.8s var(--ease) both; }
+    .reserve-card:nth-child(1) { animation-delay: 0.1s; } .reserve-card:nth-child(2) { animation-delay: 0.2s; } .reserve-card:nth-child(3) { animation-delay: 0.3s; }
+    .reserve-card:nth-child(4) { animation-delay: 0.4s; } .reserve-card:nth-child(5) { animation-delay: 0.5s; }
+    .reserve-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(27,67,50,0.15); }
+    .card-image { position: relative; height: 240px; overflow: hidden; }
+    .card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+    .reserve-card:hover .card-image img { transform: scale(1.08); }
+    .card-badge { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.95); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--primary); transition: all 0.3s var(--ease); }
+    .reserve-card:hover .card-badge { transform: scale(1.1); background: var(--primary); color: white; }
+    .card-content { padding: 1.8rem; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark); margin-bottom: 0.8rem; line-height: 1.3; }
+    .card-description { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; }
+    .card-button { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 0.7rem 1.5rem; border-radius: 24px; text-decoration: none; font-weight: 600; transition: all 0.3s var(--ease); box-shadow: 0 4px 12px rgba(45,106,79,0.25); cursor: pointer; font-size: 0.9rem; }
+    .card-button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(45,106,79,0.35); }
+    .card-button svg { width: 18px; height: 18px; transition: transform 0.3s var(--ease); }
+    .card-button:hover svg { transform: translateX(4px); }
+    @media (max-width: 768px) { .other-reserves { padding: 4rem 1.5rem; } .reserves-grid { grid-template-columns: 1fr; gap: 2rem; } .card-image { height: 220px; } }
+
+    /* ======================================== КАРТА И МОДАЛЬНОЕ ОКНО ======================================== */
+    .map-section { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 6rem 2rem; position: relative; overflow: hidden; }
+    .map-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--primary), transparent); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+    .map-header { text-align: center; max-width: 700px; margin: 0 auto 3rem; position: relative; z-index: 1; }
+    .map-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 2.8rem); color: var(--primary-dark); margin-bottom: 1rem; animation: fadeInUp 0.8s var(--ease) both; }
+    .map-subtitle { color: var(--text-muted); font-size: 1.1rem; animation: fadeInUp 0.8s var(--ease) both; animation-delay: 0.1s; }
+    .map-wrapper { max-width: 1200px; margin: 0 auto; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(27,67,50,0.15); border: 3px solid rgba(45,106,79,0.1); animation: fadeInUp 0.8s var(--ease) both; animation-delay: 0.2s; position: relative; z-index: 1; }
+    #map { height: 600px; width: 100%; z-index: 1; }
+
+    /* Кастомные маркеры */
+    .custom-marker { transition: all 0.3s var(--ease); }
+    .custom-marker:hover { transform: scale(1.2); z-index: 1000 !important; }
+    .marker-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border: 3px solid white; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; box-shadow: 0 4px 16px rgba(27,67,50,0.35); cursor: pointer; transition: all 0.3s var(--ease); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(45, 106, 79, 0); } }
+    .custom-marker:hover .marker-icon { transform: scale(1.15); animation: none; }
+
+    /* Модальное окно карты */
+    .reserve-modal { position: fixed; inset: 0; z-index: 99999; background: rgba(0, 0, 0, 0.88); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; overflow: hidden; }
+    .reserve-modal.active { opacity: 1; visibility: visible; }
+    .modal-close { position: fixed; top: 20px; right: 20px; width: 44px; height: 44px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); border: 1.5px solid rgba(255, 255, 255, 0.4); border-radius: 50%; color: white; font-size: 1.5rem; cursor: pointer; z-index: 100001; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .modal-close:hover { background: rgba(255, 255, 255, 0.35); transform: rotate(90deg); }
+    .modal-card { max-width: 950px; margin: 0 auto; padding: 60px 1rem 1rem; height: 100vh; display: flex; align-items: center; }
+    .modal-card-inner { background: rgba(255, 255, 255, 0.98); border-radius: 22px; overflow: hidden; box-shadow: 0 25px 70px rgba(0,0,0,0.45); width: 100%; height: 88vh; max-height: 800px; display: flex; flex-direction: column; }
+
+    .modal-slideshow { position: relative; flex: 0 0 65%; min-height: 320px; flex-shrink: 0; overflow: hidden; background-color: #111; }
+    .modal-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.4s ease-out; will-change: opacity; transform: translateZ(0); }
+    .modal-slide.active { opacity: 1; z-index: 2; }
+    .modal-slideshow::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 35%); pointer-events: none; z-index: 3; }
+    .modal-slide-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; background: rgba(255,255,255,0.25); backdrop-filter: blur(6px); border: 1.5px solid rgba(255,255,255,0.4); border-radius: 50%; color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10; user-select: none; }
+    .modal-slide-nav:hover { background: rgba(255,255,255,0.45); transform: translateY(-50%) scale(1.1); }
+    .modal-slide-nav:active { transform: translateY(-50%) scale(0.95); }
+    .modal-slide-nav.prev { left: 12px; } .modal-slide-nav.next { right: 12px; }
+    .modal-slide-counter { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); padding: 0.25rem 1rem; border-radius: 16px; color: white; font-weight: 600; font-size: 0.75rem; z-index: 10; }
+
+    .modal-info { padding: 0.6rem 1.5rem 0.3rem; flex-shrink: 0; display: flex; flex-direction: column; }
+    .modal-info-category { display: inline-block; background: var(--primary); color: white; padding: 0.2rem 0.7rem; border-radius: 16px; font-size: 0.7rem; font-weight: 600; margin-bottom: 0.3rem; width: fit-content; }
+    .modal-info-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--primary-dark); margin-bottom: 0.15rem; line-height: 1.2; }
+    .modal-info-description { color: var(--text-muted); font-size: 0.82rem; line-height: 1.35; }
+    .modal-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(45,106,79,0.15), transparent); margin: 0 1.5rem; flex-shrink: 0; }
+    .modal-info-section { padding: 0.3rem 1.5rem; flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--primary-light) transparent; }
+    .modal-info-section-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
+    .route-info { flex: 1; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 0.6rem 0.8rem; border: 1.5px solid rgba(45,106,79,0.12); }
+    .route-item { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px dashed rgba(45,106,79,0.15); }
+    .route-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .route-icon { width: 28px; height: 28px; background: var(--primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; font-size: 0.9rem; }
+    .route-content h4 { font-size: 0.85rem; color: var(--primary-dark); margin-bottom: 0.1rem; }
+    .route-content p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.3; }
+    .modal-actions { padding: 0.4rem 1.5rem 0.6rem; flex-shrink: 0; display: flex; gap: 0.6rem; }
+    .modal-button { flex: 1; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.4rem; border: none; }
+    .modal-button-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; }
+    .modal-button-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(45,106,79,0.3); }
+    .modal-button-secondary { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+    .modal-button-secondary:hover { background: var(--primary); color: white; }
+    .modal-button svg { width: 16px; height: 16px; }
+
+    @media (max-width: 900px) { .map-section { padding: 4rem 1rem; } #map { height: 450px; } .modal-card { padding: 55px 0.8rem 0.8rem; } .modal-card-inner { height: 92vh; } .modal-slideshow { min-height: 260px; } .modal-info { padding: 0.5rem 1rem 0.2rem; } .modal-info-title { font-size: 1.15rem; } .modal-divider { margin: 0 1rem; } .modal-info-section { padding: 0.3rem 1rem; } .modal-actions { padding: 0.3rem 1rem 0.5rem; } }
+    @media (max-width: 768px) { .modal-slideshow { min-height: 220px; } }
+
+    /* ======================================== ФУТЕР С ОРНАМЕНТОМ ======================================== */
+    .site-footer { background: var(--primary-dark); color: rgba(255,255,255,0.85); padding: 5rem 2rem 2rem; position: relative; overflow: hidden; }
+    .site-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3Cpath d='M20 10 L30 20 L20 30 L10 20 Z' fill='none' stroke='%23ffffff' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.04; pointer-events: none; z-index: 0; animation: ornament-scroll 25s linear infinite; }
+    .site-footer::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), var(--primary-light), var(--accent), transparent); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+    .footer-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 4rem; }
+    .footer-brand { max-width: 320px; }
+    .footer-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; margin-bottom: 1.2rem; transition: all 0.3s var(--ease); }
+    .footer-logo:hover { transform: translateY(-3px); }
+    .footer-logo .f-logo-icon { width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: all 0.3s var(--ease); animation: float 3s ease-in-out infinite; }
+    .footer-logo:hover .f-logo-icon { transform: scale(1.1) rotate(5deg); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+    .footer-logo span { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: #fff; transition: all 0.3s var(--ease); }
+    .footer-logo:hover span { color: var(--accent); }
+    .footer-desc { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.65); margin-bottom: 1.8rem; transition: all 0.3s var(--ease); }
+    .footer-brand:hover .footer-desc { color: rgba(255,255,255,0.85); }
+    .social-links { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .social-links a { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.8rem; transition: all 0.3s var(--ease); position: relative; overflow: hidden; }
+    .social-links a::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; z-index: 0; }
+    .social-links a:hover::before { width: 100%; height: 100%; }
+    .social-links a span { position: relative; z-index: 1; }
+    .social-links a:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 6px 15px rgba(212, 163, 115, 0.4); }
+    .footer-col h4 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #fff; margin-bottom: 1.2rem; position: relative; padding-bottom: 0.8rem; }
+    .footer-col h4::after { content: ''; position: absolute; bottom: 0; left: 0; width: 45px; height: 2px; background: var(--accent); border-radius: 2px; transition: width 0.3s var(--ease); }
+    .footer-col:hover h4::after { width: 80px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.9rem; }
+    .footer-col ul li a, .footer-col ul li { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.95rem; transition: all 0.3s var(--ease); display: block; position: relative; }
+    .footer-col ul li a::before { content: '→'; position: absolute; left: -15px; opacity: 0; transition: all 0.3s var(--ease); color: var(--accent); }
+    .footer-col ul li a:hover { color: var(--accent); transform: translateX(8px); }
+    .footer-col ul li a:hover::before { opacity: 1; left: -12px; }
+    .contact-list li, .schedule li { font-size: 0.95rem; line-height: 1.6; transition: all 0.3s var(--ease); }
+    .contact-list li:hover, .schedule li:hover { color: var(--accent); transform: translateX(5px); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; text-align: center; }
+    .footer-divider { width: 80px; height: 3px; margin: 0 auto 1.2rem; background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 2px; animation: shimmer 3s linear infinite; }
+    .footer-bottom p { font-size: 0.85rem; color: rgba(255,255,255,0.5); transition: all 0.3s var(--ease); }
+    .footer-bottom:hover p { color: rgba(255,255,255,0.7); }
+    @media (max-width: 992px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; } }
+    @media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-brand { max-width: 100%; margin: 0 auto 1rem; } .social-links { justify-content: center; } .footer-col h4::after { left: 50%; transform: translateX(-50%); } .footer-col ul li a:hover { transform: translateX(0); } }
+    #main-content { position: relative; z-index: 2; background: #fff; }
+    
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <!-- ✅ ЛОГОТИП: Вставлено лого.jpg -->
+        <img src="лого.jpg" alt="Логотип" class="site-logo-img">
+        <div class="logo-text">
+            <span class="logo-main">Экопросвещение</span>
+            <span class="logo-sub">Республика Адыгея</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#slideshow" class="nav-link active">Главная</a></li>
+        <li><a href="#about" class="nav-link">Об объектах</a></li>
+        <li class="dropdown-wrapper">
+          <a href="#" class="nav-link dropdown-toggle" id="dropdownToggle" onclick="toggleDropdown(); return false;">ООПТ Майкопа</a>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-header"><h4>🌲 ООПТ Майкопа и Адыгеи</h4></div>
+          </div>
+        </li>
+        <li><a href="#other-reserves" class="nav-link">Все объекты</a></li>
+        <li><a href="проблемы.html" class="nav-link">Проблемы</a></li>
+        <li><a href="#map-section" class="nav-link">Карта</a></li>
+      </ul>
+      <button class="mobile-menu" aria-label="Открыть меню">☰</button>
+    </div>
+  </nav>
+
+  <section id="slideshow">
+    <div class="slide active" style="background-image: url(слайд_шоу/1.jpg);"></div>
+    <div class="slide" style="background-image: url(вотопады_руфабго/гл.jpg);"></div>
+    <div class="slide" style="background-image: url(Хаджох/гл.jpg);"></div>
+    <div class="slide" style="background-image: url(слайд_шоу/AMA4mJSLfwNPFz1yuwM5Hw.jpg);"></div>
+    <button class="slide-nav prev" onclick="changeSlide(-1)">❮</button>
+    <button class="slide-nav next" onclick="changeSlide(1)">❯</button>
+    <div class="slide-content"><h1 id="slideTitle">ООПТ Майкопа</h1><div class="title-divider"></div><p class="slide-subtitle" id="slideSubtitle">Уникальные природные объекты Республики Адыгея</p></div>
+    <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">4</span></div>
+    <button class="scroll-down-btn" onclick="scrollToContent()">↓</button>
+  </section>
+
+  <div id="main-content">
+    <section class="reserve-overview" id="about">
+      <div class="overview-container">
+        <div class="overview-content">
+          <div class="overview-badge">🏞️ ООПТ Республики Адыгея</div>
+          <h2 class="overview-title">Природное наследие Майкопа</h2>
+          <p class="overview-text">Майкопский район и прилегающие территории богаты уникальными природными объектами: от водопадов и каньонов до горных массивов и цветущих долин.</p>
+          <p class="overview-text">Здесь представлено 5 особо охраняемых природных территорий (ООПТ), каждая из которых сохраняет уникальные экосистемы и предлагает возможности для экологического туризма и просвещения.</p>
+        </div>
+        <div class="overview-image">
+          <div class="image-wrapper"><img src="слайд_шоу/1641011785ba46de8da78d716e02ff5d.max-1200x800.jpg" alt="Природа Адыгеи"><div class="image-overlay"><h3>Горы Адыгеи</h3><p>Уникальные ландшафты предгорий Кавказа</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="other-reserves" id="other-reserves">
+      <div class="reserves-header"><h2 class="reserves-title">ООПТ Майкопа и Адыгеи</h2><p class="reserves-subtitle">Исследуйте уникальные природные объекты региона</p></div>
+      <div class="reserves-grid">
+        <article class="reserve-card"><div class="card-image"><img src="горная/цветы.jpg" alt="Горная Адыгея"><span class="card-badge">Горный район</span></div><div class="card-content"><h3 class="card-title">Горная Адыгея</h3><p class="card-description">Живописные горные ландшафты с альпийскими лугами, цветущими полями и панорамными видами на Кавказские горы.</p><button class="card-button" onclick="focusAndOpenModal(0)">Показать на карте <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></button></div></article>
+        <article class="reserve-card"><div class="card-image"><img src="сахарай/гл.jpg" alt="Каньон реки Сахрай"><span class="card-badge">Каньон</span></div><div class="card-content"><h3 class="card-title">Каньон реки Сахрай</h3><p class="card-description">Живописный каньон с кристально чистой водой, отвесными скалами и уникальной флорой. Популярное место для фотосъемки.</p><button class="card-button" onclick="focusAndOpenModal(1)">Показать на карте <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></button></div></article>
+        <article class="reserve-card"><div class="card-image"><img src="большой_тхач/гл.jpg" alt="Хаджохская теснина"><span class="card-badge">Каньон</span></div><div class="card-content"><h3 class="card-title">Хаджохская теснина</h3><p class="card-description">Узкий каньон реки Белой с отвесными скалами высотой до 40 м. Геологический памятник природы.</p><button class="card-button" onclick="focusAndOpenModal(2)">Показать на карте <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></button></div></article>
+        <article class="reserve-card"><div class="card-image"><img src="большой_тхач/гл.jpg" alt="Большой Тхач"><span class="card-badge">Гора</span></div><div class="card-content"><h3 class="card-title">Большой Тхач</h3><p class="card-description">Легендарная гора-останец высотой 2368 м. Часть объекта ЮНЕСКО «Западный Кавказ».</p><button class="card-button" onclick="focusAndOpenModal(3)">Показать на карте <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></button></div></article>
+        <article class="reserve-card"><div class="card-image"><img src="вотопады_руфабго/гл.jpg" alt="Водопады Руфабго"><span class="card-badge">Водопады</span></div><div class="card-content"><h3 class="card-title">Водопады Руфабго</h3><p class="card-description">Каскад из 7 живописных водопадов на реке Руфабго. Популярный маршрут для экотуризма.</p><button class="card-button" onclick="focusAndOpenModal(4)">Показать на карте <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></button></div></article>
+      </div>
+    </section>
+
+    <section class="map-section" id="map-section">
+      <div class="map-header"><h2 class="map-title">Карта ООПТ Майкопа</h2><p class="map-subtitle">Нажмите на метку 🌲 чтобы увидеть информацию</p></div>
+      <div class="map-wrapper"><div id="map"></div></div>
+    </section>
+
+    <div class="reserve-modal" id="reserveModal">
+      <button class="modal-close" onclick="closeReserveModal()">×</button>
+      <div class="modal-card">
+        <div class="modal-card-inner">
+          <div class="modal-slideshow" id="modalSlideshow">
+            <div class="modal-slide active" id="modalSlide1"></div>
+            <div class="modal-slide" id="modalSlide2"></div>
+            <div class="modal-slide" id="modalSlide3"></div>
+            <button class="modal-slide-nav prev" onclick="changeModalSlide(-1)">❮</button>
+            <button class="modal-slide-nav next" onclick="changeModalSlide(1)">❯</button>
+            <div class="modal-slide-counter"><span id="modalCurrentSlide">1</span> / <span id="modalTotalSlides">3</span></div>
+          </div>
+          <div class="modal-info">
+            <span class="modal-info-category" id="modalCategory">Категория</span>
+            <h2 class="modal-info-title" id="modalTitle">Название объекта</h2>
+            <p class="modal-info-description" id="modalDescription">Описание объекта</p>
+          </div>
+          <div class="modal-divider"></div>
+          <div class="modal-info-section">
+            <h3 class="modal-info-section-title"><span>🚗</span><span>Как добраться от Майкопа</span></h3>
+            <div class="route-info" id="modalRoute"></div>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-button modal-button-primary" onclick="buildRoute()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg> Построить маршрут</button>
+            <button class="modal-button modal-button-secondary" onclick="closeReserveModal()">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-grid">
+          <div class="footer-brand"><a href="#" class="footer-logo"><div class="f-logo-icon">🌲</div><span>Экопросвещение</span></a><p class="footer-desc">Образовательный портал об ООПТ Республики Адыгея.</p><div class="social-links"><a href="#"><span>VK</span></a><a href="#"><span>TG</span></a><a href="#"><span>YT</span></a></div></div>
+          <div class="footer-col"><h4>Навигация</h4><ul><li><a href="#slideshow">Главная</a></li><li><a href="#about">Об объектах</a></li><li><a href="#other-reserves">Все объекты</a></li><li><a href="#map-section">Карта</a></li></ul></div>
+          <div class="footer-col"><h4>Контакты</h4><ul class="contact-list"><li>📍 Майкоп, ул. Набережная, 12</li><li>📞 +7 (8772) 55-55-55</li><li>✉️ info@ecoprosveshenie.ru</li></ul></div>
+          <div class="footer-col"><h4>Режим работы</h4><ul class="schedule"><li>Пн-Пт: 09:00 - 18:00</li><li>Сб-Вс: 10:00 - 16:00</li><li>📋 По записи</li></ul></div>
+        </div>
+        <div class="footer-bottom"><div class="footer-divider"></div><p>© 2026 Экопросвещение | Республика Адыгея. Все права защищены.</p></div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const reservesData = [
+      { name: "Горная Адыгея", category: "Горный район", description: "Живописные горные ландшафты с альпийскими лугами и цветущими полями.", images: ["горная/цветы.jpg", "горная/фишт.jpg", "горная/лагонаки.jpg"], coords: [44.5000, 40.1500], slug: "gornaya-adygeya", link: "Горная_ад.html", route: { car: { title: "🚗 Авто", text: "Майкоп → горная дорога (25 км). ~40 мин." }, bus: { title: "🚌 Автобус", text: "Майкоп → горные села, далее пешком. ~1 ч." }, foot: { title: "🥾 Пешком", text: "От окраины Майкопа по горным тропам — 8 км, ~3 ч." } } },
+      { name: "Каньон реки Сахрай", category: "Каньон", description: "Живописный каньон с кристально чистой водой и отвесными скалами.", images: ["сахарай/гл.jpg", "сахарай/1VcPXY2Q9-b2oHVQIWzUSnqblETQI8ZxwT2aATp-OsV_hWisNJksVnAPt-1NAe16WMuoVVGUC9o3brJkFr-2TkTv.jpg", "сахарай/qqGkE2MdOvmgy8AbruoP_f4e2eIF3baDEGcN5Jx1HQ5y1X4ubfmHWdIdT5flkO6mOog4tdkNOwXXLNaE8cqu7Vtq.jpg"], coords: [44.2000, 40.0500], slug: "sakhray", link: "сахарай.html", route: { car: { title: "🚗 Авто", text: "Майкоп → указатель на Сахрай (18 км). ~30 мин." }, bus: { title: "🚌 Автобус", text: "Майкоп → ближайшая остановка, далее 2 км пешком. ~45 мин." }, foot: { title: "🚶 Пешком", text: "От трассы по маркированной тропе — 2 км, ~40 мин." } } },
+      { name: "Хаджохская теснина", category: "Каньон", description: "Узкий каньон реки Белой с отвесными скалами высотой до 40 м.", images: ["Хаджох/гл.jpg", "Хаджох/W86gsCgm3zpcOXPfu8u35dQznoe3ZhQJ8KTFwy42iSPTgPl_8mXYc8rLL7WAevpBUMP4IA1ETuuZ-6mwqm2UJL3v.jpg", "хаджох/x9k1HWOZuwgk8Fjhm2jeqJqxmEpZcR8UsFWT6RMXMAcdZ-H11tdciKlu-Dvpo3p6cQ7vseD3p5gYB3g-RXiRttlJ.jpg"], coords: [44.1500, 40.1000], slug: "khadjokh", link: "Hadzoh.html", route: { car: { title: "🚗 Авто", text: "Майкоп → Каменномостский (15 км) → центр посёлка. ~25 мин." }, bus: { title: "🚌 Автобус", text: "Майкоп → Каменномостский, теснина в центре посёлка. ~30 мин." }, foot: { title: "🚶 Пешком", text: "От автовокзала Каменномостского — 10 мин пешком." } } },
+      { name: "Большой Тхач", category: "Гора", description: "Легендарная гора-останец высотой 2368 м. Часть объекта ЮНЕСКО.", images: ["большой_тхач/гл.jpg", "большой_тхач/NfnAQMOfxxqzgJ7YMGa4M1A1cM_d6BceGyV0feD3EvmdeYDIidi1TYFktbQvUtJWo4CAcbIzTbisyKhp4JxyahFZ.jpg", "большой_тхач/b1cMDzkK1L_ykFVgLday4ehi26BwTyzPgw_vIDfAghYdZJzf5mZE8jAnQ_fEZ5JBvKhmWf7pbuxLCq5aoh6cJ5h4.jpg"], coords: [43.8500, 40.3500], slug: "tkach", link: "That.html", route: { car: { title: "🚗 Авто", text: "Майкоп → Гузерипль (60 км) → начало маршрута. ~1.5 ч." }, bus: { title: "🚌 Автобус", text: "Майкоп → Гузерипль, далее трансфер до старта. ~2 ч." }, foot: { title: "🥾 Треккинг", text: "От Гузерипля до подножия — 15 км, 5-6 ч. Требуется подготовка." } } },
+      { name: "Водопады Руфабго", category: "Водопады", description: "Каскад из 7 живописных водопадов на реке Руфабго.", images: ["вотопады_руфабго/гл.jpg", "вотопады_руфабго/BKZg6ZmcrVYSXrGBgntgFPLq0g6NFOXCrXzPkthJKPNJYS2qfBzQFKcLqqM0xISHWaBnrZWCqDUR8JnLIAeDmWHt.jpg", "вотопады_руфабго/SrBVmGTjot8Oa0QGhABUtQ6ZG7GTXEevtUJLLlKOIdExuB7gtbNpvV20FUbVO_LM6mWDSjsINCJQl3mVJl5Qnozq.jpg"], coords: [44.1333, 40.1167], slug: "rufabgo", link: "vodopads.html", route: { car: { title: "🚗 Авто", text: "Майкоп → Каменномостский (15 км) → указатель на Руфабго (5 км). ~30 мин." }, bus: { title: "🚌 Автобус", text: "Майкоп → Каменномостский, затем такси до входа. ~40 мин." }, foot: { title: "🥾 Пешком", text: "От Каменномостского по маркированной тропе — 3 км, ~1 ч." } } }
+    ];
+
+    // Предзагрузка изображений для мгновенного открытия
+    function preloadImages() {
+      reservesData.forEach(reserve => {
+        reserve.images.forEach(src => { const img = new Image(); img.src = src; });
+      });
+    }
+    window.addEventListener('DOMContentLoaded', preloadImages);
+
+    // Выпадающее меню
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    reservesData.forEach((res) => {
+      const item = document.createElement('div'); item.className = 'dropdown-item';
+      const link = res.link || `reserve-${res.slug}.html`;
+      item.onclick = () => { closeDropdown(); window.location.href = link; };
+      item.innerHTML = `<div class="dropdown-item-icon" style="background-image: url('${res.images[0]}')"></div><div class="dropdown-item-text"><h5>${res.name}</h5><span>${res.category}</span></div><span class="dropdown-item-badge">${res.category}</span>`;
+      dropdownMenu.appendChild(item);
+    });
+
+    // Слайд-шоу главной страницы
+    const slideData = [
+      { title: "ООПТ Майкопа", subtitle: "Уникальные природные объекты Республики Адыгея" },
+      { title: "Водопады Руфабго", subtitle: "Каскад из 7 живописных водопадов" },
+      { title: "Хаджохская теснина", subtitle: "Геологический памятник природы" },
+      { title: "Кавказский биосферный заповедник", subtitle: "Объект Всемирного наследия ЮНЕСКО" }
+    ];
+    let currentSlide = 0, isTransitioning = false;
+    const slides = document.querySelectorAll('.slide'), totalSlides = slides.length;
+    document.getElementById('totalSlides').textContent = totalSlides;
+
+    function showSlide(n) { 
+      if (isTransitioning) return; isTransitioning = true; 
+      slides.forEach(s => s.classList.remove('active')); 
+      currentSlide = (n + totalSlides) % totalSlides; 
+      slides[currentSlide].classList.add('active'); 
+      document.getElementById('currentSlide').textContent = currentSlide + 1; 
+      const el = document.querySelector('.slide-content'); 
+      el.style.animation = 'none'; el.offsetHeight; 
+      el.style.animation = `floatUp 1.2s var(--ease) both`; 
+      document.getElementById('slideTitle').textContent = slideData[currentSlide].title; 
+      document.getElementById('slideSubtitle').textContent = slideData[currentSlide].subtitle; 
+      clearInterval(slideInterval); slideInterval = setInterval(() => changeSlide(1), 7000); 
+      setTimeout(() => isTransitioning = false, 1800);
+    }
+    function changeSlide(n) { showSlide(currentSlide + n); }
+    let slideInterval = setInterval(() => changeSlide(1), 7000);
+    const slideshow = document.getElementById('slideshow');
+    slideshow.addEventListener('mouseenter', () => clearInterval(slideInterval));
+    slideshow.addEventListener('mouseleave', () => { clearInterval(slideInterval); slideInterval = setInterval(() => changeSlide(1), 7000); });
+    function scrollToContent() { document.getElementById('about').scrollIntoView({ behavior: 'smooth' }); }
+
+    // Карта и модальное окно
+    let currentModalReserve = null, currentModalSlide = 0, modalSlideInterval = null;
+    const map = L.map('map', { scrollWheelZoom: false }).setView([44.4, 40.3], 9);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(map);
+
+    function createCustomIcon() { return L.divIcon({ className: 'custom-marker', html: '<div class="marker-icon">🌲</div>', iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44] }); }
+
+    reservesData.forEach((reserve, index) => {
+      const marker = L.marker(reserve.coords, { icon: createCustomIcon() }).addTo(map);
+      marker.on('mouseover', function() { this.getElement().querySelector('.marker-icon').style.transform = 'scale(1.15)'; });
+      marker.on('mouseout', function() { this.getElement().querySelector('.marker-icon').style.transform = 'scale(1)'; });
+      marker.on('click', function() { map.flyTo(reserve.coords, 12, { animate: true, duration: 1 }); setTimeout(() => openReserveModal(index), 800); });
+    });
+
+    function focusAndOpenModal(index) { 
+      document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' }); 
+      map.flyTo(reservesData[index].coords, 12, { animate: true, duration: 1.2 }); 
+      setTimeout(() => openReserveModal(index), 1000); 
+    }
+
+    function openReserveModal(index) {
+      const reserve = reservesData[index]; currentModalReserve = reserve; currentModalSlide = 0;
+      document.getElementById('modalCategory').textContent = reserve.category;
+      document.getElementById('modalTitle').textContent = reserve.name;
+      document.getElementById('modalDescription').textContent = reserve.description;
+      document.getElementById('modalTotalSlides').textContent = reserve.images.length;
+      document.getElementById('modalCurrentSlide').textContent = 1;
+      reserve.images.forEach((img, i) => { const s = document.getElementById(`modalSlide${i + 1}`); if(s) { s.style.backgroundImage = `url(${img})`; s.classList.toggle('active', i === 0); } });
+      document.getElementById('modalRoute').innerHTML = Object.values(reserve.route).map(r => `<div class="route-item"><div class="route-icon">${r.title.charAt(0)}</div><div class="route-content"><h4>${r.title.substring(2)}</h4><p>${r.text}</p></div></div>`).join('');
+      document.getElementById('navbar').classList.add('hidden');
+      document.getElementById('reserveModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      startModalSlideshow();
+    }
+
+    function closeReserveModal() { 
+      document.getElementById('reserveModal').classList.remove('active'); 
+      document.body.style.overflow = ''; 
+      document.getElementById('navbar').classList.remove('hidden'); 
+      stopModalSlideshow(); currentModalReserve = null; 
+    }
+
+    function changeModalSlide(n) { 
+      if (!currentModalReserve) return; const t = currentModalReserve.images.length; 
+      currentModalSlide = (currentModalSlide + n + t) % t; 
+      for(let i=0; i<t; i++) { const s = document.getElementById(`modalSlide${i + 1}`); if(s) s.classList.toggle('active', i === currentModalSlide); }
+      document.getElementById('modalCurrentSlide').textContent = currentModalSlide + 1; 
+      stopModalSlideshow(); startModalSlideshow(); 
+    }
+    function startModalSlideshow() { stopModalSlideshow(); modalSlideInterval = setInterval(() => changeModalSlide(1), 4000); }
+    function stopModalSlideshow() { if (modalSlideInterval) { clearInterval(modalSlideInterval); modalSlideInterval = null; } }
+    function buildRoute() { if (!currentModalReserve) return; const [lat, lng] = currentModalReserve.coords; window.open(`https://www.google.com/maps/dir/?api=1&origin=Майкоп&destination=${lat},${lng}`, '_blank'); }
+
+    function toggleDropdown() { dropdownMenu.classList.toggle('active'); document.querySelector('.dropdown-toggle').classList.toggle('active'); }
+    function closeDropdown() { dropdownMenu.classList.remove('active'); document.querySelector('.dropdown-toggle').classList.remove('active'); }
+    document.addEventListener('click', (e) => { const d = document.querySelector('.dropdown-wrapper'); if (d && !d.contains(e.target)) closeDropdown(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeReserveModal(); closeDropdown(); } });
+    document.getElementById('reserveModal').addEventListener('click', e => { if (e.target.id === 'reserveModal') closeReserveModal(); });
+
+    const navbar = document.getElementById('navbar'), navLinks = document.querySelector('.nav-links'), links = document.querySelectorAll('.nav-link'), mobileBtn = document.querySelector('.mobile-menu');
+    window.addEventListener('scroll', () => { if (window.scrollY > 50) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled'); const pos = window.scrollY + 120; if (pos < slideshow.offsetHeight - 100) { links.forEach(l => l.classList.remove('active')); links[0]?.classList.add('active'); return; } links.forEach(link => { const target = document.querySelector(link.getAttribute('href')); if (target && pos >= target.offsetTop && pos < target.offsetTop + target.offsetHeight) { links.forEach(l => l.classList.remove('active')); link.classList.add('active'); } }); });
+    mobileBtn.addEventListener('click', () => { navLinks.classList.toggle('active'); mobileBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; closeDropdown(); });
+    links.forEach(link => { if (!link.classList.contains('dropdown-toggle')) link.addEventListener('click', () => { navLinks.classList.remove('active'); mobileBtn.textContent = '☰'; }); });
+    document.addEventListener('DOMContentLoaded', () => { setTimeout(() => { slides[0].style.opacity = '1'; }, 50); });
+  </script>
+</body>
+</html>

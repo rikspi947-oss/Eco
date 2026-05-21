@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каньон реки Сахрай | Экопросвещение</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #2d6a4f; --primary-dark: #1b4332; --primary-light: #40916c; --accent: #d4a373; --warning: #e63946; --bg-light: #f8fafc; --bg-warm: #fefcf8; --text-dark: #1b4332; --text-muted: #52796f; --text-light: #84a98c; --ease: cubic-bezier(0.22, 1, 0.36, 1); --nav-height: 72px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+    
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes kenBurns { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+    @keyframes ornament-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+    /* ========================================
+       НАВИГАЦИЯ (ИСПРАВЛЕНО)
+       ======================================== */
+    .page-navbar { position: fixed; top: 0; left: 0; right: 0; width: 100%; height: var(--nav-height); z-index: 10000; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; }
+    .page-navbar::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%232d6a4f' stroke-width='1.5'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.1; pointer-events: none; z-index: 0; animation: ornament-scroll 20s linear infinite; }
+    .page-navbar.scrolled { height: 60px; background: rgba(255,255,255,0.95); box-shadow: 0 4px 20px rgba(27,67,50,0.1); }
+    .page-nav-inner { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    
+    .navbar-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: #fff; transition: opacity 0.3s var(--ease); }
+    .navbar-logo:hover { opacity: 0.9; }
+    .logo-img { width: 44px; height: 44px; border-radius: 11px; object-fit: cover; box-shadow: 0 3px 10px rgba(45, 106, 79, 0.2); transition: all 0.3s var(--ease); animation: float 4s ease-in-out infinite; flex-shrink: 0; background: #fff; }
+    .page-navbar.scrolled .logo-img { width: 34px; height: 34px; border-radius: 8px; animation: none; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.3); transition: font-size 0.3s ease, color 0.3s ease, text-shadow 0.3s ease; white-space: nowrap; }
+    .page-navbar.scrolled .navbar-logo { color: var(--primary); }
+    .page-navbar.scrolled .logo-text { font-size: 1rem; text-shadow: none; }
+    
+    /* ✅ Исправление: анимация не блокирует кнопки, текст не исчезает */
+    .page-nav-links { display: flex; gap: 0.5rem; list-style: none; align-items: center; }
+    .page-nav-links a { 
+      color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.88rem; padding: 0.4rem 1rem; border-radius: 20px; 
+      transition: all 0.25s var(--ease); position: relative; overflow: hidden; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .page-nav-links a::before { 
+      content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.25); 
+      transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%;
+    }
+    .page-nav-links a:hover::before, .page-nav-links a.active::before { width: 100%; height: 100%; }
+    .page-nav-links a:hover, .page-nav-links a.active { color: #fff; z-index: 1; }
+    .page-navbar.scrolled .page-nav-links a { color: var(--primary); font-size: 0.82rem; padding: 0.3rem 0.8rem; }
+    .page-navbar.scrolled .page-nav-links a::before { background: rgba(45,106,79,0.1); }
+    .page-navbar.scrolled .page-nav-links a:hover, .page-navbar.scrolled .page-nav-links a.active { color: #fff; background: var(--primary); }
+    
+    @media (max-width: 768px) { .page-nav-links { display: none; } }
+
+    /* Остальные секции */
+    .page-hero { position: relative; height: 100vh; min-height: 600px; display: flex; align-items: flex-end; justify-content: flex-start; overflow: hidden; }
+    .page-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; animation: kenBurns 30s infinite alternate ease-in-out; }
+    .page-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(27,67,50,0.85) 0%, rgba(27,67,50,0.3) 40%, rgba(27,67,50,0.1) 70%); }
+    .page-hero-content { position: relative; z-index: 3; padding: 0 2rem 5rem; max-width: 800px; width: 100%; }
+    .page-hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); padding: 0.4rem 1.2rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; color: #fff; margin-bottom: 1.2rem; }
+    .page-hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5rem); font-weight: 800; color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); line-height: 1.1; margin-bottom: 1rem; }
+    .page-hero-subtitle { font-size: 1.15rem; color: rgba(255,255,255,0.85); max-width: 600px; line-height: 1.6; font-weight: 300; }
+    .page-hero-stats { display: flex; gap: 2rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); }
+    .page-hero-stat { text-align: left; }
+    .page-hero-stat-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #fff; }
+    .page-hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em; }
+    @media (max-width: 768px) { .page-hero-stats { flex-direction: column; gap: 1rem; } .page-hero-content { padding: 0 1.5rem 4rem; } }
+
+    .page-section { padding: 6rem 2rem; } .page-section-dark { background: var(--primary-dark); color: #fff; } .page-section-light { background: var(--bg-light); } .page-section-warm { background: var(--bg-warm); }
+    .section-container { max-width: 1200px; margin: 0 auto; }
+    .section-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; padding: 0.35rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--primary-dark); margin-bottom: 1rem; line-height: 1.2; } .section-title-white { color: #fff; }
+    .section-desc { color: var(--text-muted); font-size: 1.05rem; max-width: 700px; line-height: 1.7; margin-bottom: 3rem; } .section-desc-white { color: rgba(255,255,255,0.7); }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-text p { color: var(--text-muted); margin-bottom: 1.2rem; font-size: 1rem; line-height: 1.8; }
+    .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+    .about-feature { display: flex; gap: 1rem; align-items: flex-start; padding: 1.2rem; background: var(--bg-light); border-radius: 16px; transition: transform 0.3s var(--ease); }
+    .about-feature:hover { transform: translateY(-3px); }
+    .about-feature h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 0.2rem; } .about-feature p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0; }
+    .about-image-stack { position: relative; height: 500px; }
+    .about-image-main { width: 85%; height: 400px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(27,67,50,0.15); position: relative; z-index: 2; } .about-image-main img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+    .about-image-main:hover img { transform: scale(1.03); }
+    .about-image-secondary { position: absolute; bottom: 0; right: 0; width: 55%; height: 280px; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 40px rgba(27,67,50,0.2); border: 5px solid #fff; z-index: 3; } .about-image-secondary img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+    .about-image-secondary:hover img { transform: scale(1.03); }
+    .about-image-accent { position: absolute; top: -20px; right: 20%; width: 100px; height: 100px; background: var(--accent); border-radius: 50%; opacity: 0.2; z-index: 1; animation: float 5s ease-in-out infinite; }
+    @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 3rem; } .about-image-stack { height: 400px; } .about-features { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .about-image-stack { height: 350px; } .about-image-main { width: 100%; height: 300px; } .about-image-secondary { width: 60%; height: 200px; } }
+
+    .wildlife-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    .wildlife-card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 2rem 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s var(--ease); backdrop-filter: blur(4px); }
+    .wildlife-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.12); }
+    .wildlife-card h4 { font-size: 1.1rem; color: #fff; margin-bottom: 0.4rem; } .wildlife-card p { font-size: 0.85rem; color: rgba(255,255,255,0.65); line-height: 1.5; }
+    .wildlife-card .count { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 0.3rem; }
+    @media (max-width: 992px) { .wildlife-grid { grid-template-columns: repeat(2, 1fr); } } @media (max-width: 768px) { .wildlife-grid { grid-template-columns: 1fr; } }
+
+    .routes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .route-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 30px rgba(27,67,50,0.08); transition: transform 0.3s var(--ease); border: 1px solid rgba(45,106,79,0.08); }
+    .route-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(27,67,50,0.12); }
+    .route-card-header { padding: 1.5rem 1.5rem 1rem; } .route-card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 0.2rem; } .route-card-header span { font-size: 0.8rem; color: var(--text-light); }
+    .route-card-body { padding: 0 1.5rem 1.5rem; } .route-card-body p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; }
+    .route-card-footer { padding: 0 1.5rem 1.5rem; } .route-card-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--primary); font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: gap 0.3s var(--ease); } .route-card-link:hover { gap: 0.7rem; }
+    @media (max-width: 992px) { .routes-grid { grid-template-columns: 1fr; } }
+
+    .challenges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .challenge-card { background: #fff; border-radius: 20px; padding: 2.5rem 2rem; box-shadow: 0 8px 30px rgba(27,67,50,0.08); border-left: 4px solid var(--primary); transition: transform 0.3s var(--ease); }
+    .challenge-card:hover { transform: translateY(-4px); }
+    .challenge-card h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--primary-dark); margin-bottom: 0.8rem; } .challenge-card p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1rem; }
+    .challenge-impact { padding: 0.6rem 1rem; background: rgba(45,106,79,0.1); border-radius: 8px; font-size: 0.85rem; color: var(--primary); font-weight: 600; display: inline-block; }
+    @media (max-width: 992px) { .challenges-grid { grid-template-columns: 1fr; } }
+
+    .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 220px); gap: 1rem; }
+    .gallery-item { border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; } .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease); } .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item::after { content: ''; position: absolute; inset: 0; background: rgba(27,67,50,0); transition: background 0.3s var(--ease); } .gallery-item:hover::after { background: rgba(27,67,50,0.1); }
+    .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; } .gallery-item:nth-child(4) { grid-column: span 2; }
+    @media (max-width: 992px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 200px); } .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; } .gallery-item:nth-child(4) { grid-column: span 1; } }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: 1fr; grid-template-rows: auto; } .gallery-item, .gallery-item:nth-child(1), .gallery-item:nth-child(4) { grid-column: span 1; grid-row: span 1; height: 200px; } }
+
+    .practical-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+    .practical-card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 8px 30px rgba(27,67,50,0.08); transition: transform 0.3s var(--ease); border: 1px solid rgba(45,106,79,0.1); }
+    .practical-card:hover { transform: translateY(-3px); }
+    .practical-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 2px solid rgba(45,106,79,0.1); }
+    .practical-card ul { list-style: none; } .practical-card li { color: var(--text-muted); padding: 0.6rem 0; border-bottom: 1px dashed rgba(45,106,79,0.12); display: flex; justify-content: space-between; font-size: 0.95rem; } .practical-card li:last-child { border-bottom: none; } .practical-card li span { color: var(--primary-dark); font-weight: 600; }
+    @media (max-width: 992px) { .practical-info-grid { grid-template-columns: 1fr; } }
+
+    .page-footer { background: var(--primary-dark); color: rgba(255,255,255,0.75); padding: 5rem 2rem 0; position: relative; overflow: hidden; }
+    .page-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.03; pointer-events: none; z-index: 0; animation: ornament-scroll 30s linear infinite; }
+    .footer-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; } .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; margin-bottom: 4rem; } .footer-brand { max-width: 320px; }
+    
+    .footer-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; margin-bottom: 1.2rem; }
+    .footer-logo-img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; transition: transform 0.3s var(--ease); animation: float 4s ease-in-out infinite; }
+    .footer-logo:hover .footer-logo-img { transform: scale(1.08); }
+    .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #fff; }
+    .footer-desc { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.6); margin-bottom: 1.8rem; }
+    .footer-socials { display: flex; gap: 0.8rem; } 
+    .footer-social-link { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.8rem; transition: all 0.25s var(--ease); position: relative; overflow: hidden; }
+    .footer-social-link::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%; }
+    .footer-social-link:hover::before { width: 100%; height: 100%; }
+    .footer-social-link span { position: relative; z-index: 1; }
+    .footer-social-link:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+    .footer-col h4 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: #fff; margin-bottom: 1.2rem; position: relative; padding-bottom: 0.8rem; } .footer-col h4::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 2px; background: var(--accent); border-radius: 2px; }
+    .footer-links { list-style: none; } .footer-links li { margin-bottom: 0.8rem; } .footer-links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.95rem; transition: color 0.25s var(--ease); display: inline-flex; align-items: center; gap: 0.3rem; } .footer-links a:hover { color: var(--accent); }
+    .footer-contact-item { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 2rem 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-divider { width: 80px; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 2px; margin: 0 auto 1rem; }
+    .footer-copyright { font-size: 0.88rem; color: rgba(255,255,255,0.45); } .footer-copyright a { color: var(--accent); text-decoration: none; } .footer-copyright a:hover { text-decoration: underline; }
+    .footer-made { font-size: 0.85rem; color: rgba(255,255,255,0.35); }
+    @media (max-width: 992px) { .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-brand { max-width: 100%; margin: 0 auto; } .footer-socials { justify-content: center; } .footer-col h4::after { left: 50%; transform: translateX(-50%); } .footer-contact-item { justify-content: center; } }
+    @media (max-width: 600px) { .footer-bottom { flex-direction: column; text-align: center; } }
+  </style>
+</head>
+<body>
+  <nav class="page-navbar" id="pageNav">
+    <div class="page-nav-inner">
+      <!-- ✅ ЛОГОТИП В ШАПКЕ -->
+      <a href="index.html" class="navbar-logo">
+        <img src="лого.jpg" alt="Логотип" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-main">Экопросвещение</span>
+          <span class="logo-sub">Республика Адыгея</span>
+        </div>
+      </a>
+      <ul class="page-nav-links"><li><a href="#about" class="active">О каньоне</a></li><li><a href="#wildlife">Особенности</a></li><li><a href="#routes">Водопады</a></li><li><a href="#challenges">Маршрут</a></li><li><a href="#gallery">Галерея</a></li><li><a href="#practical">Информация</a></li></ul>
+    </div>
+  </nav>
+
+  <section class="page-hero"><div class="page-hero-bg" style="background-image: url('сахарай/гл.jpg');"></div>
+    <div class="page-hero-content"><div class="page-hero-badge">Памятник природы • ООПТ регионального значения</div><h1 class="page-hero-title">Каньон реки Сахрай</h1><p class="page-hero-subtitle">Уникальное извилистое ущелье с отполированными водой скалами и изумрудной рекой между посёлками Усть-Сахрай и Новопрохладное</p>
+      <div class="page-hero-stats"><div class="page-hero-stat"><div class="page-hero-stat-value">5 м</div><div class="page-hero-stat-label">Высота водопада</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">44.16°N</div><div class="page-hero-stat-label">Широта</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">40.29°E</div><div class="page-hero-stat-label">Долгота</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">3</div><div class="page-hero-stat-label">Основные водопада</div></div></div>
+    </div>
+  </section>
+
+  <section class="page-section" id="about"><div class="section-container"><div class="about-grid">
+    <div class="about-text" style="animation: fadeInLeft 0.8s var(--ease) both;"><span class="section-badge">Где находится каньон?</span><h2 class="section-title">Памятник природы Адыгеи</h2>
+      <p>Каньон реки Сахрай — действующая особо охраняемая природная территория регионального значения в Республике Адыгея. Расположен на реке Сахрай между посёлками Усть-Сахрай и Новопрохладное, в живописной горно-лесистой местности.</p>
+      <p>В каньоне русло реки сильно сужается, а скалы гладко отполированы тысячелетним течением воды. Речной поток переливается по скальному желобу из одной глубокой ямы в другую, обрываясь в конце эффектным водопадом высотой до 5 метров.</p>
+      <p>Этот уголок природы привлекает туристов своей первозданной красотой: изумрудная вода отражает небо, а над ущельем возвышается редкий лес с характерными голыми деревьями, создавая неповторимую атмосферу дикой природы Кавказа.</p>
+      <div class="about-features"><div class="about-feature"><div><h4>Отполированные скалы</h4><p>Гладкие слоистые породы, обработанные водой</p></div></div><div class="about-feature"><div><h4>Изумрудная вода</h4><p>Молочно-голубой оттенок и чистота</p></div></div><div class="about-feature"><div><h4>Узкое русло</h4><p>Река прорезана в скальных породах</p></div></div><div class="about-feature"><div><h4>ООПТ</h4><p>Охраняемая территория регионального значения</p></div></div></div>
+    </div>
+    <div class="about-image-stack" style="animation: fadeInRight 0.8s var(--ease) both;"><div class="about-image-accent"></div><div class="about-image-main"><img src="сахарай/1VcPXY2Q9-b2oHVQIWzUSnqblETQI8ZxwT2aATp-OsV_hWisNJksVnAPt-1NAe16WMuoVVGUC9o3brJkFr-2TkTv.jpg" alt="Каньон реки Сахрай"></div><div class="about-image-secondary"><img src="сахарай/qqGkE2MdOvmgy8AbruoP_f4e2eIF3baDEGcN5Jx1HQ5y1X4ubfmHWdIdT5flkO6mOog4tdkNOwXXLNaE8cqu7Vtq.jpg" alt="Изумрудная вода"></div></div>
+  </div></div></section>
+
+  <section class="page-section page-section-dark" id="wildlife"><div class="section-container"><div style="text-align: center; margin-bottom: 3.5rem;"><span class="section-badge">Природные особенности</span><h2 class="section-title section-title-white">Уникальность каньона</h2><p class="section-desc section-desc-white" style="margin: 0.8rem auto 0;">Сочетание геологических форм, водных потоков и растительности создаёт неповторимый ландшафт</p></div>
+    <div class="wildlife-grid">
+      <div class="wildlife-card"><span class="count">✓</span><h4>Слоистые скалы</h4><p>Гладкие отполированные породы с выраженной слоистостью, обрамляющие ущелье</p></div>
+      <div class="wildlife-card"><span class="count">✓</span><h4>Изумрудная вода</h4><p>Спокойная вода молочно-голубого оттенка, отражающая небо и скалы</p></div>
+      <div class="wildlife-card"><span class="count">✓</span><h4>Редкий лес</h4><p>Над ущельем поднимается лес с характерными голыми деревьями</p></div>
+      <div class="wildlife-card"><span class="count">✓</span><h4>Небольшие пороги</h4><p>Горная река образует живописные пороги и перекаты</p></div>
+    </div>
+  </div></section>
+
+  <section class="page-section page-section-light" id="routes"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Главные достопримечательности</span><h2 class="section-title">Водопады каньона</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Три живописных водопада, расположенных в каньоне и вдоль реки Сахрай</p></div>
+    <div class="routes-grid">
+      <div class="route-card"><div class="route-card-header"><div><h3>Три брата</h3><span>Тройной водопад • 4 м</span></div></div><div class="route-card-body"><p>Расположен в 5 км от окраины посёлка. Водопад не заметен с дороги, так как она находится значительно выше уровня реки, а обзору мешает густой лес. Три каскада создают эффектную картину.</p></div></div>
+      <div class="route-card"><div class="route-card-header"><div><h3>Разлом</h3><span>Три каскада • 10 м</span></div></div><div class="route-card-body"><p>Находится в 7 км выше по течению от «Трёх братьев». Высота около 10 метров, состоит из трёх каскадов, которые спадают через узкую щель в скале, создавая мощный и зрелищный поток.</p></div></div>
+      <div class="route-card"><div class="route-card-header"><div><h3>Мамрюк</h3><span>На ручье Мамрюк • 3 м</span></div></div><div class="route-card-body"><p>Небольшой, но живописный водопад на ручье Мамрюк — притоке реки Сахрай. Падает бурным потоком в глубокие чаши, перекатываясь по отшлифованным желобам. Идеален для фотографий.</p></div></div>
+      <div class="route-card"><div class="route-card-header"><div><h3>Главный водопад</h3><span>Конец каньона • 5 м</span></div></div><div class="route-card-body"><p>Финальный аккорд каньона — водопад высотой до 5 метров, где река обрывается после прохождения по скальному желобу. Мощный поток создаёт завораживающее зрелище.</p></div></div>
+      <div class="route-card"><div class="route-card-header"><div><h3>Скальный желоб</h3><span>Природная достопримечательность</span></div></div><div class="route-card-body"><p>Уникальная геологическая формация: речной поток переливается по отполированному скальному желобу из одной глубокой ямы в другую, создавая непрерывную водную симфонию.</p></div></div>
+      <div class="route-card"><div class="route-card-header"><div><h3>Изумрудные заводи</h3><span>Места для отдыха</span></div></div><div class="route-card-body"><p>Спокойные участки реки с изумрудной водой, отражающей небо и скалы. Идеальные места для отдыха, фотосъёмки и созерцания первозданной природы каньона.</p></div></div>
+    </div>
+  </div></section>
+
+  <section class="page-section page-section-warm" id="challenges"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge" style="background: linear-gradient(135deg, #2d6a4f, #1b4332);">Логистика посещения</span><h2 class="section-title">Как добраться</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Практические советы для планирования маршрута к каньону</p></div>
+    <div class="challenges-grid">
+      <div class="challenge-card"><h3>От Усть-Сахрая</h3><p>Ближайший населённый пункт, откуда обычно начинаются маршруты к водопадам. Отсюда путь к основным достопримечательностям каньона наиболее короткий и доступный.</p><div class="challenge-impact">Рекомендуемый старт</div></div>
+      <div class="challenge-card"><h3>От Новопрохладного</h3><p>Альтернативная точка старта. К основным водопадам путь от него будет длиннее и сложнее, зато к водопаду «Манькин Шум» — ближе. Подходит для опытных туристов.</p><div class="challenge-impact">Для подготовленных</div></div>
+      <div class="challenge-card"><h3>Дорога и парковка</h3><p>Грунтовая каменистая дорога. Низкая машина может поцарапать днище. После поворота на водопады появляется огромная колея — машину обычно оставляют за 7 км от водопадов.</p><div class="challenge-impact">Важно знать</div></div>
+    </div>
+  </div></section>
+
+  <section class="page-section" id="gallery"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Галерея</span><h2 class="section-title">Красота каньона Сахрай</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Вдохновляющие виды извилистого ущелья, отполированных скал и изумрудной воды</p></div>
+    <div class="gallery-grid">
+      <div class="gallery-item"><img src="сахарай/17_JgjWM2E3yJfCX35yo2cPbivVz4p_TnMtQ3_LNSeAtUjcvz050SsacS28ZvZxZ5ubOEMbJVche6LIBgMBNWRLe.jpg" alt="Вид на каньон"></div>
+      <div class="gallery-item"><img src="сахарай/2dLNUmDRZHpJQj7gyDX6dOn7dDOiZI9x4gRtGuEzTW9waXRgHA1UqYWPm42l1XyKC8mOoreoixJgjknz7xvp67bP.jpg" alt="Водопад в каньоне"></div>
+      <div class="gallery-item"><img src="сахарай/6Tu4YwgRegO8thiHBakNOtkoK7wlkaMwFHahZkwB_vcfdLA9E437F1wx6ZKnHACBJpuB4sX1exZpuQ0Q_am2rZH7.jpg" alt="Отполированные скалы"></div>
+      <div class="gallery-item"><img src="сахарай/azGs10t9rm00JQ3n3MJlpXmk2LNhldbfd5eCwA4x5eCkwnU9FU66Ru7RyDuWRDG8hvqzOmoeDnlpm0Wu7OTIj0Dd.jpg" alt="Лес над ущельем"></div>
+      <div class="gallery-item"><img src="сахарай/гл.jpg" alt="Горная река"></div>
+    </div>
+  </div></section>
+
+  <section class="page-section page-section-light" id="practical"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Полезная информация</span><h2 class="section-title">Планирование визита</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Всё, что нужно знать перед поездкой в каньон реки Сахрай</p></div>
+    <div class="practical-info-grid">
+      <div class="practical-card"><h3>Инфраструктура</h3><ul><li>Места для стоянки <span>У водопадов</span></li><li>Беседки <span>Платно в сезон / бесплатно</span></li><li>Туалеты <span>Отсутствуют</span></li><li>Мусор <span>Забирайте с собой</span></li></ul></div>
+      <div class="practical-card"><h3>Транспорт</h3><ul><li>Тип дороги <span>Грунтовая, каменистая</span></li><li>Проходимость <span>Высокая (внедорожник)</span></li><li>Парковка <span>За 7 км от водопадов</span></li><li>Колея <span>Огромная, осторожно!</span></li></ul></div>
+      <div class="practical-card"><h3>Что взять</h3><ul><li>Обувь <span>Трекинговая, непромокаемая</span></li><li>Одежда <span>По погоде, смена</span></li><li>Питание <span>Запас воды и еды</span></li><li>Связь <span>Мобильная сеть нестабильна</span></li></ul></div>
+      <div class="practical-card"><h3>Безопасность</h3><ul><li>Погода <span>Проверять прогноз</span></li><li>Уровень воды <span>После дождей — опасно</span></li><li>Скалы <span>Скользкие, осторожно</span></li><li>Маршрут <span>Сообщать о планах</span></li></ul></div>
+    </div>
+  </div></section>
+
+  <footer class="page-footer"><div class="footer-container"><div class="footer-grid"><div class="footer-brand">
+    <!-- ✅ ЛОГОТИП В ПОДВАЛЕ -->
+    <a href="index.html" class="footer-logo">
+      <img src="лого.jpg" alt="Логотип" class="footer-logo-img">
+      <span class="footer-logo-text">Экопросвещение</span>
+    </a>
+    <p class="footer-desc">Образовательный портал об ООПТ Республики Адыгея. Сохраняем природу через просвещение и ответственный экотуризм.</p>
+    <div class="footer-socials"><a href="#" class="footer-social-link" aria-label="VK">VK</a><a href="#" class="footer-social-link" aria-label="Telegram">TG</a><a href="#" class="footer-social-link" aria-label="YouTube">YT</a></div>
+  </div><div class="footer-col"><h4>Навигация</h4><ul class="footer-links"><li><a href="index.html">← Главная страница</a></li><li><a href="#about">О каньоне</a></li><li><a href="#wildlife">Особенности</a></li><li><a href="#routes">Водопады</a></li><li><a href="#challenges">Маршрут</a></li><li><a href="#gallery">Галерея</a></li><li><a href="#practical">Информация</a></li></ul></div><div class="footer-col"><h4>Локация</h4><div class="footer-contact-item"><span>Река Сахрай, Адыгея</span></div><div class="footer-contact-item"><span>Между п. Усть-Сахрай и Новопрохладное</span></div><div class="footer-contact-item"><span>Координаты: 44.16°N, 40.29°E</span></div><div class="footer-contact-item"><span>Памятник природы регионального значения</span></div></div></div><div class="footer-bottom"><div><div class="footer-divider"></div><p class="footer-copyright">© 2026 Экопросвещение | Каньон реки Сахрай. Все права защищены. <a href="index.html">Вернуться на главную</a></p></div><p class="footer-made">Сделано для сохранения природы Адыгеи</p></div></div></footer>
+
+  <script>
+    window.addEventListener('scroll', () => { const nav = document.getElementById('pageNav'); if (window.scrollY > 80) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); });
+    const links = document.querySelectorAll('.page-nav-links a'); window.addEventListener('scroll', () => { const scrollPos = window.scrollY + 120; links.forEach(link => { const target = document.querySelector(link.getAttribute('href')); if (target && scrollPos >= target.offsetTop && scrollPos < target.offsetTop + target.offsetHeight) { links.forEach(l => l.classList.remove('active')); link.classList.add('active'); } }); });
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }; const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } }); }, observerOptions);
+    document.querySelectorAll('.wildlife-card, .route-card, .challenge-card, .practical-card, .gallery-item').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'all 0.5s var(--ease)'; observer.observe(el); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Водопады Руфабго | Экопросвещение</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #2d6a4f; --primary-dark: #1b4332; --primary-light: #40916c; --accent: #d4a373; --warning: #e63946; --bg-light: #f8fafc; --bg-warm: #fefcf8; --text-dark: #1b4332; --text-muted: #52796f; --text-light: #84a98c; --ease: cubic-bezier(0.22, 1, 0.36, 1); --nav-height: 72px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+    
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes kenBurns { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+    @keyframes ornament-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+    /* ========================================
+       НАВИГАЦИЯ (ИСПРАВЛЕНО)
+       ======================================== */
+    .page-navbar { position: fixed; top: 0; left: 0; right: 0; width: 100%; height: var(--nav-height); z-index: 10000; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; }
+    .page-navbar::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%232d6a4f' stroke-width='1.5'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.1; pointer-events: none; z-index: 0; animation: ornament-scroll 20s linear infinite; }
+    .page-navbar.scrolled { height: 60px; background: rgba(255,255,255,0.95); box-shadow: 0 4px 20px rgba(27,67,50,0.1); }
+    .page-nav-inner { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    
+    .navbar-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: #fff; transition: opacity 0.3s var(--ease); }
+    .navbar-logo:hover { opacity: 0.9; }
+    .logo-img { width: 44px; height: 44px; border-radius: 11px; object-fit: cover; box-shadow: 0 3px 10px rgba(45, 106, 79, 0.2); transition: all 0.3s var(--ease); animation: float 4s ease-in-out infinite; flex-shrink: 0; background: #fff; }
+    .page-navbar.scrolled .logo-img { width: 34px; height: 34px; border-radius: 8px; animation: none; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.3); transition: font-size 0.3s ease, color 0.3s ease, text-shadow 0.3s ease; white-space: nowrap; }
+    .page-navbar.scrolled .navbar-logo { color: var(--primary); }
+    .page-navbar.scrolled .logo-text { font-size: 1rem; text-shadow: none; }
+    
+    /* ✅ Исправление: анимация не блокирует кнопки, текст не исчезает */
+    .page-nav-links { display: flex; gap: 0.5rem; list-style: none; align-items: center; }
+    .page-nav-links a { 
+      color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.88rem; padding: 0.4rem 1rem; border-radius: 20px; 
+      transition: all 0.25s var(--ease); position: relative; overflow: hidden; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .page-nav-links a::before { 
+      content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.25); 
+      transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%;
+    }
+    .page-nav-links a:hover::before, .page-nav-links a.active::before { width: 100%; height: 100%; }
+    .page-nav-links a:hover, .page-nav-links a.active { color: #fff; z-index: 1; }
+    .page-navbar.scrolled .page-nav-links a { color: var(--primary); font-size: 0.82rem; padding: 0.3rem 0.8rem; }
+    .page-navbar.scrolled .page-nav-links a::before { background: rgba(45,106,79,0.1); }
+    .page-navbar.scrolled .page-nav-links a:hover, .page-navbar.scrolled .page-nav-links a.active { color: #fff; background: var(--primary); }
+    
+    @media (max-width: 768px) { .page-nav-links { display: none; } }
+
+    /* Остальные секции */
+    .page-hero { position: relative; height: 100vh; min-height: 600px; display: flex; align-items: flex-end; justify-content: flex-start; overflow: hidden; }
+    .page-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; animation: kenBurns 30s infinite alternate ease-in-out; }
+    .page-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(27,67,50,0.85) 0%, rgba(27,67,50,0.3) 40%, rgba(27,67,50,0.1) 70%); }
+    .page-hero-content { position: relative; z-index: 3; padding: 0 2rem 5rem; max-width: 800px; width: 100%; }
+    .page-hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); padding: 0.4rem 1.2rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; color: #fff; margin-bottom: 1.2rem; }
+    .page-hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5rem); font-weight: 800; color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); line-height: 1.1; margin-bottom: 1rem; }
+    .page-hero-subtitle { font-size: 1.15rem; color: rgba(255,255,255,0.85); max-width: 600px; line-height: 1.6; font-weight: 300; }
+    .page-hero-stats { display: flex; gap: 2rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); }
+    .page-hero-stat { text-align: left; }
+    .page-hero-stat-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #fff; }
+    .page-hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em; }
+    @media (max-width: 768px) { .page-hero-stats { flex-direction: column; gap: 1rem; } .page-hero-content { padding: 0 1.5rem 4rem; } }
+
+    .page-section { padding: 6rem 2rem; } .page-section-dark { background: var(--primary-dark); color: #fff; } .page-section-light { background: var(--bg-light); } .page-section-warm { background: var(--bg-warm); }
+    .section-container { max-width: 1200px; margin: 0 auto; }
+    .section-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; padding: 0.35rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--primary-dark); margin-bottom: 1rem; line-height: 1.2; } .section-title-white { color: #fff; }
+    .section-desc { color: var(--text-muted); font-size: 1.05rem; max-width: 700px; line-height: 1.7; margin-bottom: 3rem; } .section-desc-white { color: rgba(255,255,255,0.7); }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-text p { color: var(--text-muted); margin-bottom: 1.2rem; font-size: 1rem; line-height: 1.8; }
+    .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+    .about-feature { display: flex; gap: 1rem; align-items: flex-start; padding: 1.2rem; background: var(--bg-light); border-radius: 16px; transition: transform 0.3s var(--ease); }
+    .about-feature:hover { transform: translateY(-3px); }
+    .about-feature h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 0.2rem; } .about-feature p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0; }
+    .about-image-stack { position: relative; height: 500px; }
+    .about-image-main { width: 85%; height: 400px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(27,67,50,0.15); position: relative; z-index: 2; } .about-image-main img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+    .about-image-main:hover img { transform: scale(1.03); }
+    .about-image-secondary { position: absolute; bottom: 0; right: 0; width: 55%; height: 280px; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 40px rgba(27,67,50,0.2); border: 5px solid #fff; z-index: 3; } .about-image-secondary img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+    .about-image-secondary:hover img { transform: scale(1.03); }
+    .about-image-accent { position: absolute; top: -20px; right: 20%; width: 100px; height: 100px; background: var(--accent); border-radius: 50%; opacity: 0.2; z-index: 1; animation: float 5s ease-in-out infinite; }
+    @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 3rem; } .about-image-stack { height: 400px; } .about-features { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .about-image-stack { height: 350px; } .about-image-main { width: 100%; height: 300px; } .about-image-secondary { width: 60%; height: 200px; } }
+
+    .waterfalls-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .waterfall-card { background: rgba(255,255,255,0.08); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s var(--ease); backdrop-filter: blur(4px); }
+    .waterfall-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.12); }
+    .waterfall-card h4 { font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem; } .waterfall-card p { font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.5; }
+    @media (max-width: 992px) { .waterfalls-grid { grid-template-columns: repeat(2, 1fr); } } @media (max-width: 768px) { .waterfalls-grid { grid-template-columns: 1fr; } }
+
+    .routes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+    .route-card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 8px 30px rgba(27,67,50,0.08); transition: transform 0.3s var(--ease); border: 1px solid rgba(45,106,79,0.08); }
+    .route-card:hover { transform: translateY(-4px); }
+    .route-card h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--primary-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .route-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+    .route-card ul { list-style: disc; padding-left: 1.2rem; color: var(--text-muted); }
+    .route-card li { margin-bottom: 0.5rem; }
+    @media (max-width: 992px) { .routes-grid { grid-template-columns: 1fr; } }
+
+    .legend-section { display: flex; gap: 3rem; align-items: center; flex-wrap: wrap; }
+    .legend-text { flex: 1; min-width: 300px; }
+    .legend-text h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); margin-bottom: 1rem; }
+    .legend-text p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+    .legend-img { flex: 0 0 350px; max-width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(27,67,50,0.15); }
+    .legend-img img { width: 100%; height: auto; display: block; transition: transform 0.5s var(--ease); }
+    .legend-img:hover img { transform: scale(1.03); }
+
+    .practical-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+    .practical-card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 8px 30px rgba(27,67,50,0.08); transition: transform 0.3s var(--ease); }
+    .practical-card:hover { transform: translateY(-3px); }
+    .practical-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 2px solid rgba(45,106,79,0.1); }
+    .practical-card ul { list-style: none; } .practical-card li { color: var(--text-muted); padding: 0.6rem 0; border-bottom: 1px dashed rgba(45,106,79,0.12); display: flex; justify-content: space-between; font-size: 0.95rem; } .practical-card li:last-child { border-bottom: none; } .practical-card li span { color: var(--primary-dark); font-weight: 600; }
+    @media (max-width: 992px) { .practical-info-grid { grid-template-columns: 1fr; } }
+
+    .page-footer { background: var(--primary-dark); color: rgba(255,255,255,0.75); padding: 5rem 2rem 0; position: relative; overflow: hidden; }
+    .page-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.03; pointer-events: none; z-index: 0; animation: ornament-scroll 30s linear infinite; }
+    .footer-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; } .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; margin-bottom: 4rem; } .footer-brand { max-width: 320px; }
+    .footer-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; margin-bottom: 1.2rem; }
+    .footer-logo-img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; transition: transform 0.3s var(--ease); animation: float 4s ease-in-out infinite; }
+    .footer-logo:hover .footer-logo-img { transform: scale(1.08); }
+    .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #fff; }
+    .footer-desc { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.6); margin-bottom: 1.8rem; }
+    .footer-socials { display: flex; gap: 0.8rem; } 
+    .footer-social-link { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.8rem; transition: all 0.25s var(--ease); position: relative; overflow: hidden; }
+    .footer-social-link::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%; }
+    .footer-social-link:hover::before { width: 100%; height: 100%; }
+    .footer-social-link span { position: relative; z-index: 1; }
+    .footer-social-link:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+    .footer-col h4 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: #fff; margin-bottom: 1.2rem; position: relative; padding-bottom: 0.8rem; } .footer-col h4::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 2px; background: var(--accent); border-radius: 2px; }
+    .footer-links { list-style: none; } .footer-links li { margin-bottom: 0.8rem; } .footer-links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.95rem; transition: color 0.25s var(--ease); display: inline-flex; align-items: center; gap: 0.3rem; } .footer-links a:hover { color: var(--accent); }
+    .footer-contact-item { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 2rem 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-divider { width: 80px; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 2px; margin: 0 auto 1rem; }
+    .footer-copyright { font-size: 0.88rem; color: rgba(255,255,255,0.45); } .footer-copyright a { color: var(--accent); text-decoration: none; } .footer-copyright a:hover { text-decoration: underline; }
+    .footer-made { font-size: 0.85rem; color: rgba(255,255,255,0.35); }
+    @media (max-width: 992px) { .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-brand { max-width: 100%; margin: 0 auto; } .footer-socials { justify-content: center; } .footer-col h4::after { left: 50%; transform: translateX(-50%); } .footer-contact-item { justify-content: center; } }
+    @media (max-width: 600px) { .footer-bottom { flex-direction: column; text-align: center; } }
+  </style>
+</head>
+<body>
+  <nav class="page-navbar" id="pageNav">
+    <div class="page-nav-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="лого.jpg" alt="Логотип" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-main">Экопросвещение</span>
+          <span class="logo-sub">Республика Адыгея</span>
+        </div>
+      </a>
+      <ul class="page-nav-links"><li><a href="#about" class="active">О месте</a></li><li><a href="#waterfalls">Водопады</a></li><li><a href="#legend">Легенда</a></li><li><a href="#routes">Маршруты</a></li><li><a href="#practical">Информация</a></li></ul>
+    </div>
+  </nav>
+
+  <section class="page-hero"><div class="page-hero-bg" style="background-image: url('вотопады_руфабго/гл.jpg');"></div>
+    <div class="page-hero-content"><div class="page-hero-badge">Плато Лаго-Наки • Приток реки Белой</div><h1 class="page-hero-title">Водопады<br>Руфабго</h1><p class="page-hero-subtitle">Захватывающий каскад водопадов в уникальном ущелье, где древний океан оставил свои следы на скалах</p>
+      <div class="page-hero-stats"><div class="page-hero-stat"><div class="page-hero-stat-value">15+</div><div class="page-hero-stat-label">Водопадов</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">20 км</div><div class="page-hero-stat-label">Длина ручья</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">1 км</div><div class="page-hero-stat-label">Платный маршрут</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">6 км</div><div class="page-hero-stat-label">Бесплатный маршрут</div></div></div>
+    </div>
+  </section>
+
+  <section class="page-section" id="about"><div class="section-container"><div class="about-grid">
+    <div class="about-text" style="animation: fadeInLeft 0.8s var(--ease) both;"><span class="section-badge">Где находятся водопады?</span><h2 class="section-title">Плато Лаго-Наки и река Руфабго</h2>
+      <p>Лаго-Наки – это огромное по площади (800 кв. км) горное плато на западе Кавказа в окружении высоких хребтов. Именно здесь находятся водопады Руфабго. Территория плато располагается одновременно в Адыгее и в Краснодарском крае.</p>
+      <p>История Лаго-Наки начинается миллионы лет назад, когда здесь располагался древний океан Тетис. Его воды сформировали уникальный ландшафт, а отступая, оставили после себя напитанную минералами и солями землю. Сейчас на камнях и скалах можно увидеть отпечатки моллюсков и кораллов.</p>
+      <p>Ручей Руфабго – левый приток реки Белой. Он начинается на севере хребта Азиш-Тау и почти 20 км несётся по ущельям и горным склонам, пробивая себе русло в монолитной скале. Местами ширина каньона составляет всего 2–3 метра, образуя своеобразный лабиринт для дикой водной стихии.</p>
+      <div class="about-features"><div class="about-feature"><div><h4>Океан Тетис</h4><p>Следы древнего океана на скалах</p></div></div><div class="about-feature"><div><h4>800 км² плато</h4><p>Уникальная экосистема на высоте</p></div></div><div class="about-feature"><div><h4>Буковый лес</h4><p>Живописные ущелья и древние деревья</p></div></div><div class="about-feature"><div><h4>Палеолит</h4><p>Стоянки древних поселений рядом с устьем</p></div></div></div>
+    </div>
+    <div class="about-image-stack" style="animation: fadeInRight 0.8s var(--ease) both;"><div class="about-image-accent"></div><div class="about-image-main"><img src="вотопады_руфабго/BKZg6ZmcrVYSXrGBgntgFPLq0g6NFOXCrXzPkthJKPNJYS2qfBzQFKcLqqM0xISHWaBnrZWCqDUR8JnLIAeDmWHt.jpg" alt="Водопады Руфабго"></div><div class="about-image-secondary"><img src="вотопады_руфабго/a6itVNBov6wVMNMYemOLlE8V2wiZ1gYrO-IkEmLLy25TtilPYhpMGn9ud8Kt2jxsGyDXcGUzoFFDNICv47kyLZVK.jpg" alt="Буковый лес"></div></div>
+  </div></div></section>
+
+  <section class="page-section page-section-dark" id="waterfalls"><div class="section-container"><div style="text-align: center; margin-bottom: 3.5rem;"><span class="section-badge">Основные каскады</span><h2 class="section-title section-title-white">Главные водопады</h2><p class="section-desc section-desc-white" style="margin: 0.8rem auto 0;">До первых пяти водопадов добраться легко даже с ребёнком по оборудованной тропе с указателями</p></div>
+    <div class="waterfalls-grid">
+      <div class="waterfall-card"><h4>1. Три братца (Нулевой)</h4><p>Небольшой водопад у края ущелья. Вода тремя каскадами впадает в реку Белую. Удобен для обзора с моста.</p></div>
+      <div class="waterfall-card"><h4>2. Шум</h4><p>Поток срывается с 6 метров, формируя внизу чашу, где отдыхают туристы. Спуск по удобной лесенке с поручнем.</p></div>
+      <div class="waterfall-card"><h4>3. Каскадный</h4><p>Невысокий, но привлекательный каскад. Потоки воды ниспадают по ступенчатому склону в маленькое озерцо.</p></div>
+      <div class="waterfall-card"><h4>4. Сердце Руфабго</h4><p>Легендарный каскад: река огибает огромный валун и срывается вниз. Весной вода становится красноватой из-за глины.</p></div>
+      <div class="waterfall-card"><h4>5. Чаша Любви</h4><p>Сложный маршрут, требующий снаряжения. Вода падает с 5 метров в небольшой круглый водоем среди скал.</p></div>
+      <div class="waterfall-card"><h4>6. Девичья Коса (Шнурок)</h4><p>Узкая лента воды падает с высоты пятиэтажного дома. Рядом красивое озерцо, где можно освежиться летом.</p></div>
+    </div>
+  </div></section>
+
+  <section class="page-section page-section-light" id="legend"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Фольклор</span><h2 class="section-title">Легенда о рождении водопада</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Древнее адыгское предание о злом великане и смелом юноше</p></div>
+    <div class="legend-section">
+      <div class="legend-text" style="animation: fadeInLeft 0.8s var(--ease) both;">
+        <h3>Руфабго и Хаджах</h3>
+        <p>Согласно легенде, в ущелье реки Белой поселился великан-маг Руфабго. Он обладал невероятной силой, пил силы из пещеры Сквозной и поработил поселения в долине, уводя молодых красавиц.</p>
+        <p>Юноша Хаджах, любивший одну из девушек, отправился к доброму колдуну Мезмаю. Тот дал ему волшебный порошок, чтобы отвлечь великана, и велел вырвать его сердце, бросив как можно дальше в тёмные стены ущелья.</p>
+        <p>Хаджах выполнил указание. Сердце превратилось в огромный валун, который перекрыл путь ручью. Так образовался мощный водопад, получивший своё название в память о злодее.</p>
+      </div>
+      <div class="legend-img" style="animation: fadeInRight 0.8s var(--ease) both;">
+        <img src="вотопады_руфабго/SrBVmGTjot8Oa0QGhABUtQ6ZG7GTXEevtUJLLlKOIdExuB7gtbNpvV20FUbVO_LM6mWDSjsINCJQl3mVJl5Qnozq.jpg" alt="Водопад Руфабго">
+      </div>
+    </div>
+  </div></section>
+
+  <section class="page-section" id="routes"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Как пройти?</span><h2 class="section-title">Туристические маршруты</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Выберите удобный способ: быстрый платный или длинный бесплатный путь вдоль реки</p></div>
+    <div class="routes-grid">
+      <div class="route-card" style="animation: fadeInUp 0.6s var(--ease) 0.1s both;"><h3>🎫 Платный маршрут</h3><p>Начинается в устье Большого Руфабго. Проходит по мосту с красивейшим видом. Рядом расположены беседки, сувениры и кафе.</p><ul><li><strong>Длина:</strong> ~1 км по каменистой тропе</li><li><strong>Сложность:</strong> низкая, подходит для детей</li><li><strong>Вход:</strong> 500 ₽ взрослые, 200 ₽ дети 7-10 лет</li><li><strong>Особенности:</strong> оборудованные лестницы, влажные камни, нужна удобная обувь</li></ul></div>
+      <div class="route-card" style="animation: fadeInUp 0.6s var(--ease) 0.3s both;"><h3>🌿 Бесплатный маршрут</h3><p>Начинается у Хаджохской теснины, ведёт вдоль левого берега реки Белой. Проходит через урочище «Турецкий базар», пещеру Сквозная и черкесские сады.</p><ul><li><strong>Длина:</strong> ~6 км по извилистой тропе</li><li><strong>Сложность:</strong> средняя, требуется навигатор</li><li><strong>Вход:</strong> бесплатно</li><li><strong>Особенности:</strong> тропы слабо маркированы, лучше идти с опытным проводником или картой</li></ul></div>
+    </div>
+  </div></section>
+
+  <section class="page-section page-section-warm" id="practical"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Подготовка</span><h2 class="section-title">Практическая информация</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Как добраться, режим работы и важные рекомендации для посетителей</p></div>
+    <div class="practical-info-grid">
+      <div class="practical-card"><h3>🚗 Как добраться?</h3><ul><li>Авто из Майкопа/Краснодара до пос. Каменномостский</li><li>Дорога хорошая, есть заправки и гостевые дома</li><li>Общественный транспорт только до посёлка</li><li>Платная парковка рядом с кассами</li></ul></div>
+      <div class="practical-card"><h3>⏰ Режим и контакты</h3><ul><li>Ежедневно: <span>09:00 - 19:00</span></li><li>Телефон: <span>+7 (918) 222-40-97</span></li><li>Сайт: <span>armola.ru</span></li><li>Погода: <span>лучше ходить утром</span></li></ul></div>
+      <div class="practical-card"><h3>🌦️ Климат и погода</h3><ul><li>Горный воздух, умеренная влажность</li><li>Осадков в 2 раза больше, чем в крае</li><li>Зима: ледяные струи, сказочные пейзажи</li><li>Лето: зелёные склоны, тёплые дни</li></ul></div>
+      <div class="practical-card"><h3>⚠️ Экология</h3><ul><li>Антропогенная нагрузка от туристов</li><li>Проблемы с уборкой мусора</li><li>Запылённость из-за трассы</li><li>Берегите природу: уносите мусор</li></ul></div>
+    </div>
+  </div></section>
+
+  <section class="page-section" id="gallery"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Галерея</span><h2 class="section-title">Красота Руфабго</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Вдохновляющие виды каскадов, ущелья и буковых лесов</p></div>
+    <div class="gallery-grid"><div class="gallery-item"><img src="вотопады_руфабго/fXtJhrIJiHin8yT5u2MkcAFymIAMoIpVIpL2JGYoag0208RRbtFmZL8bQW_NwufURt0ANtmg0T_0eAOznad-tHAj.jpg" alt="Водопад"></div><div class="gallery-item"><img src="вотопады_руфабго/VUNCScjmkA_hGXhNUz1vmIQlbwJxnMNUK-T76FhM35HKTgTkZXOjBd-6A2IcXPpMKm71_V21amnt_dUpkrfZ09B3.jpg" alt="Ущелье"></div><div class="gallery-item"><img src="вотопады_руфабго/XFqcO7nMyZOscgTlhZemZfGw1etESOvhq7l1S211D9OCuFIsYs7NSKmiQ121ILPYlxDtH9MPnFPKBOS0xYr8gGwd.jpg" alt="Тропа"></div><div class="gallery-item"><img src="вотопады_руфабго/гл.jpg" alt="Панорама"></div></div>
+  </div></section>
+
+  <footer class="page-footer"><div class="footer-container"><div class="footer-grid"><div class="footer-brand">
+    <a href="index.html" class="footer-logo">
+      <img src="лого.jpg" alt="Логотип" class="footer-logo-img">
+      <span class="footer-logo-text">Экопросвещение</span>
+    </a>
+    <p class="footer-desc">Образовательный портал об ООПТ Республики Адыгея. Сохраняем природу через просвещение и экотуризм.</p>
+    <div class="footer-socials"><a href="#" class="footer-social-link" aria-label="VK">VK</a><a href="#" class="footer-social-link" aria-label="Telegram">TG</a><a href="#" class="footer-social-link" aria-label="YouTube">YT</a></div>
+  </div><div class="footer-col"><h4>Навигация</h4><ul class="footer-links"><li><a href="index.html">← Главная страница</a></li><li><a href="#about">О месте</a></li><li><a href="#waterfalls">Водопады</a></li><li><a href="#routes">Маршруты</a></li><li><a href="#practical">Информация</a></li></ul></div><div class="footer-col"><h4>Контакты</h4><div class="footer-contact-item"><span>п. Каменномостский, Адыгея</span></div><div class="footer-contact-item"><span>+7 (918) 222-40-97</span></div><div class="footer-contact-item"><span>armola.ru</span></div></div></div><div class="footer-bottom"><div><div class="footer-divider"></div><p class="footer-copyright">© 2026 Экопросвещение | Республика Адыгея. Все права защищены. <a href="index.html">Вернуться на главную</a></p></div><p class="footer-made">Сделано для сохранения природы</p></div></div></footer>
+
+  <script>
+    window.addEventListener('scroll', () => { const nav = document.getElementById('pageNav'); if (window.scrollY > 80) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); });
+    const links = document.querySelectorAll('.page-nav-links a'); window.addEventListener('scroll', () => { const scrollPos = window.scrollY + 120; links.forEach(link => { const target = document.querySelector(link.getAttribute('href')); if (target && scrollPos >= target.offsetTop && scrollPos < target.offsetTop + target.offsetHeight) { links.forEach(l => l.classList.remove('active')); link.classList.add('active'); } }); });
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }; const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } }); }, observerOptions);
+    document.querySelectorAll('.waterfall-card, .route-card, .practical-card, .gallery-item, .legend-section > div').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'all 0.5s var(--ease)'; observer.observe(el); });
+  </script>
+</body>
+</html>

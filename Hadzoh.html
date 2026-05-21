@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Хаджохская теснина | Экопросвещение</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #2d6a4f; --primary-dark: #1b4332; --primary-light: #40916c; --accent: #d4a373; --warning: #e63946; --bg-light: #f8fafc; --bg-warm: #fefcf8; --text-dark: #1b4332; --text-muted: #52796f; --text-light: #84a98c; --ease: cubic-bezier(0.22, 1, 0.36, 1); --nav-height: 72px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: var(--text-dark); line-height: 1.7; overflow-x: hidden; }
+    
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes kenBurns { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+    @keyframes ornament-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+    /* ========================================
+       НАВИГАЦИЯ (ИСПРАВЛЕНО)
+       ======================================== */
+    .page-navbar { position: fixed; top: 0; left: 0; right: 0; width: 100%; height: var(--nav-height); z-index: 10000; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; }
+    .page-navbar::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%232d6a4f' stroke-width='1.5'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.1; pointer-events: none; z-index: 0; animation: ornament-scroll 20s linear infinite; }
+    .page-navbar.scrolled { height: 60px; background: rgba(255,255,255,0.95); box-shadow: 0 4px 20px rgba(27,67,50,0.1); }
+    .page-nav-inner { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    
+    .navbar-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: #fff; transition: opacity 0.3s var(--ease); }
+    .navbar-logo:hover { opacity: 0.9; }
+    .logo-img { width: 44px; height: 44px; border-radius: 11px; object-fit: cover; box-shadow: 0 3px 10px rgba(45, 106, 79, 0.2); transition: all 0.3s var(--ease); animation: float 4s ease-in-out infinite; flex-shrink: 0; background: #fff; }
+    .page-navbar.scrolled .logo-img { width: 34px; height: 34px; border-radius: 8px; animation: none; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.3); transition: font-size 0.3s ease, color 0.3s ease, text-shadow 0.3s ease; white-space: nowrap; }
+    .page-navbar.scrolled .navbar-logo { color: var(--primary); }
+    .page-navbar.scrolled .logo-text { font-size: 1rem; text-shadow: none; }
+    
+    /* ✅ Исправление: анимация не блокирует кнопки, текст не исчезает */
+    .page-nav-links { display: flex; gap: 0.5rem; list-style: none; align-items: center; }
+    .page-nav-links a { 
+      color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.88rem; padding: 0.4rem 1rem; border-radius: 20px; 
+      transition: all 0.25s var(--ease); position: relative; overflow: hidden; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .page-nav-links a::before { 
+      content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.25); 
+      transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%;
+    }
+    .page-nav-links a:hover::before, .page-nav-links a.active::before { width: 100%; height: 100%; }
+    .page-nav-links a:hover, .page-nav-links a.active { color: #fff; z-index: 1; }
+    .page-navbar.scrolled .page-nav-links a { color: var(--primary); font-size: 0.82rem; padding: 0.3rem 0.8rem; }
+    .page-navbar.scrolled .page-nav-links a::before { background: rgba(45,106,79,0.1); }
+    .page-navbar.scrolled .page-nav-links a:hover, .page-navbar.scrolled .page-nav-links a.active { color: #fff; background: var(--primary); }
+    
+    @media (max-width: 768px) { .page-nav-links { display: none; } }
+
+    /* Остальные секции */
+    .page-hero { position: relative; height: 100vh; min-height: 600px; display: flex; align-items: flex-end; justify-content: flex-start; overflow: hidden; }
+    .page-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; animation: kenBurns 30s infinite alternate ease-in-out; }
+    .page-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(27,67,50,0.85) 0%, rgba(27,67,50,0.3) 40%, rgba(27,67,50,0.1) 70%); }
+    .page-hero-content { position: relative; z-index: 3; padding: 0 2rem 5rem; max-width: 800px; width: 100%; }
+    .page-hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); padding: 0.4rem 1.2rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; color: #fff; margin-bottom: 1.2rem; }
+    .page-hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5rem); font-weight: 800; color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); line-height: 1.1; margin-bottom: 1rem; }
+    .page-hero-subtitle { font-size: 1.15rem; color: rgba(255,255,255,0.85); max-width: 600px; line-height: 1.6; font-weight: 300; }
+    .page-hero-stats { display: flex; gap: 2rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); }
+    .page-hero-stat { text-align: left; }
+    .page-hero-stat-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #fff; }
+    .page-hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em; }
+    @media (max-width: 768px) { .page-hero-stats { flex-direction: column; gap: 1rem; } .page-hero-content { padding: 0 1.5rem 4rem; } }
+
+    .page-section { padding: 6rem 2rem; } .page-section-dark { background: var(--primary-dark); color: #fff; } .page-section-light { background: var(--bg-light); } .page-section-warm { background: var(--bg-warm); }
+    .section-container { max-width: 1200px; margin: 0 auto; }
+    .section-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; padding: 0.35rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--primary-dark); margin-bottom: 1rem; line-height: 1.2; } .section-title-white { color: #fff; }
+    .section-desc { color: var(--text-muted); font-size: 1.05rem; max-width: 700px; line-height: 1.7; margin-bottom: 3rem; } .section-desc-white { color: rgba(255,255,255,0.7); }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-text p { color: var(--text-muted); margin-bottom: 1.2rem; font-size: 1rem; line-height: 1.8; }
+    .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+    .about-feature { display: flex; gap: 1rem; align-items: flex-start; padding: 1.2rem; background: var(--bg-light); border-radius: 16px; transition: transform 0.3s var(--ease); }
+    .about-feature:hover { transform: translateY(-3px); }
+    .about-feature h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 0.2rem; } .about-feature p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0; }
+    .about-image-stack { position: relative; height: 500px; }
+    .about-image-main { width: 85%; height: 400px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 60px rgba(27,67,50,0.15); position: relative; z-index: 2; } .about-image-main img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+    .about-image-main:hover img { transform: scale(1.03); }
+    .about-image-secondary { position: absolute; bottom: 0; right: 0; width: 55%; height: 280px; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 40px rgba(27,67,50,0.2); border: 5px solid #fff; z-index: 3; } .about-image-secondary img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+    .about-image-secondary:hover img { transform: scale(1.03); }
+    .about-image-accent { position: absolute; top: -20px; right: 20%; width: 100px; height: 100px; background: var(--accent); border-radius: 50%; opacity: 0.2; z-index: 1; animation: float 5s ease-in-out infinite; }
+    @media (max-width: 992px) { .about-grid { grid-template-columns: 1fr; gap: 3rem; } .about-image-stack { height: 400px; } .about-features { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .about-image-stack { height: 350px; } .about-image-main { width: 100%; height: 300px; } .about-image-secondary { width: 60%; height: 200px; } }
+
+    .wildlife-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    .wildlife-card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 2rem 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s var(--ease); backdrop-filter: blur(4px); }
+    .wildlife-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.12); }
+    .wildlife-card h4 { font-size: 1.1rem; color: #fff; margin-bottom: 0.4rem; } .wildlife-card p { font-size: 0.85rem; color: rgba(255,255,255,0.65); line-height: 1.5; }
+    .wildlife-card .count { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 0.3rem; }
+    @media (max-width: 992px) { .wildlife-grid { grid-template-columns: repeat(2, 1fr); } } @media (max-width: 768px) { .wildlife-grid { grid-template-columns: 1fr; } }
+
+    .routes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .route-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 30px rgba(27,67,50,0.08); transition: transform 0.3s var(--ease); border: 1px solid rgba(45,106,79,0.08); }
+    .route-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(27,67,50,0.12); }
+    .route-card-header { padding: 1.5rem 1.5rem 1rem; } .route-card-header h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 0.2rem; } .route-card-header span { font-size: 0.8rem; color: var(--text-light); }
+    .route-card-body { padding: 0 1.5rem 1.5rem; } .route-card-body p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; }
+    .route-card-footer { padding: 0 1.5rem 1.5rem; } .route-card-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--primary); font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: gap 0.3s var(--ease); } .route-card-link:hover { gap: 0.7rem; }
+    @media (max-width: 992px) { .routes-grid { grid-template-columns: 1fr; } }
+
+    .challenges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .challenge-card { background: #fff; border-radius: 20px; padding: 2.5rem 2rem; box-shadow: 0 8px 30px rgba(27,67,50,0.08); border-left: 4px solid var(--warning); transition: transform 0.3s var(--ease); }
+    .challenge-card:hover { transform: translateY(-4px); }
+    .challenge-card h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--primary-dark); margin-bottom: 0.8rem; } .challenge-card p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1rem; }
+    .challenge-impact { padding: 0.6rem 1rem; background: rgba(230,57,70,0.08); border-radius: 8px; font-size: 0.85rem; color: var(--warning); font-weight: 600; display: inline-block; }
+    @media (max-width: 992px) { .challenges-grid { grid-template-columns: 1fr; } }
+
+    .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 220px); gap: 1rem; }
+    .gallery-item { border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; } .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease); } .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-item::after { content: ''; position: absolute; inset: 0; background: rgba(27,67,50,0); transition: background 0.3s var(--ease); } .gallery-item:hover::after { background: rgba(27,67,50,0.1); }
+    .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; } .gallery-item:nth-child(4) { grid-column: span 2; }
+    @media (max-width: 992px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 200px); } .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; } .gallery-item:nth-child(4) { grid-column: span 1; } }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: 1fr; grid-template-rows: auto; } .gallery-item, .gallery-item:nth-child(1), .gallery-item:nth-child(4) { grid-column: span 1; grid-row: span 1; height: 200px; } }
+
+    .practical-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+    .practical-card { background: #fff; border-radius: 20px; padding: 2rem; box-shadow: 0 8px 30px rgba(27,67,50,0.08); transition: transform 0.3s var(--ease); border: 1px solid rgba(45,106,79,0.1); }
+    .practical-card:hover { transform: translateY(-3px); }
+    .practical-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 2px solid rgba(45,106,79,0.1); }
+    .practical-card ul { list-style: none; } .practical-card li { color: var(--text-muted); padding: 0.6rem 0; border-bottom: 1px dashed rgba(45,106,79,0.12); display: flex; justify-content: space-between; font-size: 0.95rem; } .practical-card li:last-child { border-bottom: none; } .practical-card li span { color: var(--primary-dark); font-weight: 600; }
+    @media (max-width: 992px) { .practical-info-grid { grid-template-columns: 1fr; } }
+
+    .page-footer { background: var(--primary-dark); color: rgba(255,255,255,0.75); padding: 5rem 2rem 0; position: relative; overflow: hidden; }
+    .page-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.03; pointer-events: none; z-index: 0; animation: ornament-scroll 30s linear infinite; }
+    .footer-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; } .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; margin-bottom: 4rem; } .footer-brand { max-width: 320px; }
+    
+    .footer-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; margin-bottom: 1.2rem; }
+    .footer-logo-img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; transition: transform 0.3s var(--ease); animation: float 4s ease-in-out infinite; }
+    .footer-logo:hover .footer-logo-img { transform: scale(1.08); }
+    .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: #fff; }
+    .footer-desc { font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.6); margin-bottom: 1.8rem; }
+    .footer-socials { display: flex; gap: 0.8rem; } 
+    .footer-social-link { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.8rem; transition: all 0.25s var(--ease); position: relative; overflow: hidden; }
+    .footer-social-link::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%; }
+    .footer-social-link:hover::before { width: 100%; height: 100%; }
+    .footer-social-link span { position: relative; z-index: 1; }
+    .footer-social-link:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+    .footer-col h4 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: #fff; margin-bottom: 1.2rem; position: relative; padding-bottom: 0.8rem; } .footer-col h4::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 2px; background: var(--accent); border-radius: 2px; }
+    .footer-links { list-style: none; } .footer-links li { margin-bottom: 0.8rem; } .footer-links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.95rem; transition: color 0.25s var(--ease); display: inline-flex; align-items: center; gap: 0.3rem; } .footer-links a:hover { color: var(--accent); }
+    .footer-contact-item { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 2rem 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-divider { width: 80px; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 2px; margin: 0 auto 1rem; }
+    .footer-copyright { font-size: 0.88rem; color: rgba(255,255,255,0.45); } .footer-copyright a { color: var(--accent); text-decoration: none; } .footer-copyright a:hover { text-decoration: underline; }
+    .footer-made { font-size: 0.85rem; color: rgba(255,255,255,0.35); }
+    @media (max-width: 992px) { .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-brand { max-width: 100%; margin: 0 auto; } .footer-socials { justify-content: center; } .footer-col h4::after { left: 50%; transform: translateX(-50%); } .footer-contact-item { justify-content: center; } }
+    @media (max-width: 600px) { .footer-bottom { flex-direction: column; text-align: center; } }
+  </style>
+</head>
+<body>
+  <nav class="page-navbar" id="pageNav">
+    <div class="page-nav-inner">
+      <!-- ✅ ЛОГОТИП В ШАПКЕ -->
+      <a href="index.html" class="navbar-logo">
+        <img src="лого.jpg" alt="Логотип" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-main">Экопросвещение</span>
+          <span class="logo-sub">Республика Адыгея</span>
+        </div>
+      </a>
+      <ul class="page-nav-links"><li><a href="#about" class="active">О теснине</a></li><li><a href="#wildlife">Природа</a></li><li><a href="#routes">Тропы</a></li><li><a href="#challenges">Проблемы</a></li><li><a href="#gallery">Галерея</a></li><li><a href="#practical">Практика</a></li></ul>
+    </div>
+  </nav>
+
+  <section class="page-hero"><div class="page-hero-bg" style="background-image: url('Хаджох/гл.jpg');"></div>
+    <div class="page-hero-content"><div class="page-hero-badge">Памятник природы • Платный доступ</div><h1 class="page-hero-title">Хаджохская<br>теснина</h1><p class="page-hero-subtitle">Узкий каньон реки Белой, где бурный поток прорезал скальную породу, создав один из самых живописных памятников Адыгеи</p>
+      <div class="page-hero-stats"><div class="page-hero-stat"><div class="page-hero-stat-value">400 м</div><div class="page-hero-stat-label">Протяжённость</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">40 м</div><div class="page-hero-stat-label">Глубина каньона</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">2-6 м</div><div class="page-hero-stat-label">Ширина ущелья</div></div><div class="page-hero-stat"><div class="page-hero-stat-value">09:00-19:00</div><div class="page-hero-stat-label">Режим работы</div></div></div>
+    </div>
+  </section>
+
+  <section class="page-section" id="about"><div class="section-container"><div class="about-grid">
+    <div class="about-text" style="animation: fadeInLeft 0.8s var(--ease) both;"><span class="section-badge">Описание памятника</span><h2 class="section-title">Каньон реки Белой</h2>
+      <p>Хаджохская теснина протянулась на 400 метров. Это место, где бурная река прорезала в скале узкую щель шириной около 6 метров, а местами сужающуюся до 2 метров. Глубина каньона приближается к 40 метрам. Речка в этом узком ущелье сильно шумит, поэтому местные жители называют теснину «Шум».</p>
+      <p>Перед ущельем река спокойна, а сразу после него вода широко разливается, замедляя свой бег. Через каньон переброшен подвесной мост, откуда открывается головокружительный вид на бурлящую воду, пенящуюся порогами и закручивающуюся в водовороты. Скалы в результате выветривания принимают причудливую форму, а их верхние ярусы покрыты живописной растительностью.</p>
+      <p>Благоустроенные смотровые площадки и туристические тропы оборудованы в центральной части. Эта территория огорожена, вход на нее платный. Спуститься вниз можно по ступенькам с перилами, для отдыха предусмотрены скамейки, а по вечерам включаются фонари и прожекторы.</p>
+      <div class="about-features"><div class="about-feature"><div><h4>Подвесной мост</h4><p>Лучшая точка для панорамных снимков</p></div></div><div class="about-feature"><div><h4>Скальные стены</h4><p>Причудливые формы выветренных пород</p></div></div><div class="about-feature"><div><h4>Инфраструктура</h4><p>Лестницы, скамейки, вечернее освещение</p></div></div><div class="about-feature"><div><h4>Название «Шум»</h4><p>Из-за постоянного гула бурлящей воды</p></div></div></div>
+    </div>
+    <div class="about-image-stack" style="animation: fadeInRight 0.8s var(--ease) both;"><div class="about-image-accent"></div><div class="about-image-main"><img src="Хаджох/6Tu4YwgRegO8thiHBakNOtkoK7wlkaMwFHahZkwB_vcfdLA9E437F1wx6ZKnHACBJpuB4sX1exZpuQ0Q_am2rZH7.jpg" alt="Хаджохская теснина"></div><div class="about-image-secondary"><img src="Хаджох/azGs10t9rm00JQ3n3MJlpXmk2LNhldbfd5eCwA4x5eCkwnU9FU66Ru7RyDuWRDG8hvqzOmoeDnlpm0Wu7OTIj0Dd.jpg" alt="Подвесной мост"></div></div>
+  </div></div></section>
+
+  <section class="page-section page-section-dark" id="wildlife"><div class="section-container"><div style="text-align: center; margin-bottom: 3.5rem;"><span class="section-badge">Экосистема каньона</span><h2 class="section-title section-title-white">Природа и ландшафт</h2><p class="section-desc section-desc-white" style="margin: 0.8rem auto 0;">Уникальное сочетание водной стихии, скальных образований и горной флоры создаёт особую среду обитания</p></div>
+    <div class="wildlife-grid"><div class="wildlife-card"><span class="count">Лето</span><h4>Активная фауна</h4><p>В тёплое время года в ущелье обитает множество птиц, бабочек и ящериц, привлекаемых растительностью на скалах</p></div><div class="wildlife-card"><span class="count">Скалы</span><h4>Растительность</h4><p>Согретые солнцем верхние ярусы теснины покрыты живописными кустарниками и горными травами</p></div><div class="wildlife-card"><span class="count">Водовороты</span><h4>Гидродинамика</h4><p>Река пенится, спадает порогами и закручивается в водовороты, формируя уникальный микроклимат ущелья</p></div><div class="wildlife-card"><span class="count">40 м</span><h4>Глубина каньона</h4><p>Внушительные перепады высот создают естественную защиту для экосистемы и уникальный акустический эффект</p></div></div>
+  </div></section>
+
+  <section class="page-section page-section-light" id="routes"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Экотропы</span><h2 class="section-title">Маршруты вдоль ущелья</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Прогулка по верхнему краю занимает 1-1.5 часа, спуск к Сухому каньону — около 3 часов</p></div>
+    <div class="routes-grid"><div class="route-card"><div class="route-card-header"><div><h3>Тропа к пляжу «Лагуна»</h3><span>Начало теснины</span></div></div><div class="route-card-body"><p>От кассы на юге по улице Комсомольской через лес до спуска на дикий пляж в месте резкого сужения берегов.</p></div><div class="route-card-footer"><a href="#" class="route-card-link">Подробнее →</a></div></div><div class="route-card"><div class="route-card-header"><div><h3>Тропа вдоль улицы Мира</h3><span>Правый берег</span></div></div><div class="route-card-body"><p>Через мост на другой берег, на юг по тропе вдоль улицы Мира до конца ограждения. Спуск по крутому склону.</p></div><div class="route-card-footer"><a href="#" class="route-card-link">Подробнее →</a></div></div><div class="route-card"><div class="route-card-header"><div><h3>Тропа на левом берегу</h3><span>К реке Белой</span></div></div><div class="route-card-body"><p>По Комсомольской и Посёлочной улицам до пересечения с Жуковского. Летом при низкой воде можно дойти до конца теснины.</p></div><div class="route-card-footer"><a href="#" class="route-card-link">Подробнее →</a></div></div><div class="route-card"><div class="route-card-header"><div><h3>Тропа от улицы Мостовой</h3><span>Северный маршрут</span></div></div><div class="route-card-body"><p>По правому берегу на север до 1-го Майского тупика, откуда ведёт тропа к крутому спуску непосредственно в ущелье.</p></div><div class="route-card-footer"><a href="#" class="route-card-link">Подробнее →</a></div></div><div class="route-card"><div class="route-card-header"><div><h3>Верхний маршрут</h3><span>Панорамный путь</span></div></div><div class="route-card-body"><p>Прогулка вдоль верхнего края каньона. Занимает 1-1.5 часа, обеспечивает лучшие виды на бурлящую воду и скальные стены.</p></div><div class="route-card-footer"><a href="#" class="route-card-link">Подробнее →</a></div></div><div class="route-card"><div class="route-card-header"><div><h3>Спуск к Сухому каньону</h3><span>Продолжительный</span></div></div><div class="route-card-body"><p>Более сложный маршрут, требующий около 3 часов. Проходит через менее благоустроенные участки с крутыми спусками.</p></div><div class="route-card-footer"><a href="#" class="route-card-link">Подробнее →</a></div></div></div>
+  </div></section>
+
+  <section class="page-section page-section-warm" id="challenges"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge" style="background: linear-gradient(135deg, #e63946, #d62839);">Экологические проблемы</span><h2 class="section-title">Угрозы территории</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Факторы, негативно влияющие на состояние памятника природы и окружающую среду</p></div>
+    <div class="challenges-grid"><div class="challenge-card"><h3>Антропогенная нагрузка</h3><p>Интенсивный туристический поток на маршруте «Хаджохская теснина — Руфабго», включая тропу и родовую Черкесскую рощу, приводит к вытаптыванию и эрозии почв.</p><div class="challenge-impact">Высокий риск</div></div><div class="challenge-card"><h3>Загрязнение и мусор</h3><p>Проблемы с уборкой территории: посетители оставляют мусор и окурки, инфраструктура требует постоянного ухода и восстановления.</p><div class="challenge-impact">Средний риск</div></div><div class="challenge-card"><h3>Пыль и промышленность</h3><p>Транспортная нагрузка и бывшие карьеры (гипсовый завод) создают запылённость. Существуют риски строительства новых промышленных объектов II класса опасности.</p><div class="challenge-impact">Растущая угроза</div></div></div>
+  </div></section>
+
+  <section class="page-section" id="gallery"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Галерея</span><h2 class="section-title">Виды Хаджохской теснины</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Бурная река, подвесные мосты и причудливые скальные образования каньона</p></div>
+    <div class="gallery-grid"><div class="gallery-item"><img src="Хаджох/HbewxTGVMDsuz0nr-zqIHYWhZWLxWiLvSe5XlaQF-8Ae5pxgrkoAhEpe8mrQ3ndO52ZXxnSoS13-A_359iTXG5xh.jpg" alt="Горная река"></div><div class="gallery-item"><img src="Хаджох/x9k1HWOZuwgk8Fjhm2jeqJqxmEpZcR8UsFWT6RMXMAcdZ-H11tdciKlu-Dvpo3p6cQ7vseD3p5gYB3g-RXiRttlJ.jpg" alt="Скалы"></div><div class="gallery-item"><img src="Хаджох/mpeHXljFaf93I50xR9HeSrvlIzVIKi4GCWoaV_VsiUy6A-sfU2rVsCXfzt0EErtVxCVIbPczY0GCIvEaTm2qwm2l.jpg" alt="Лес вдоль тропы"></div><div class="gallery-item"><img src="Хаджох/RBr4ijVCn7mRW_Ff3SSVwu6uwLnzLQDPfgm10rGtFRRCNINVkxYza2yqqGHX2egcfv3V0TAkY8Mwpz0cTJTwdTyG.jpg" alt="Вечернее освещение"></div><div class="gallery-item"><img src="Хаджох/6Tu4YwgRegO8thiHBakNOtkoK7wlkaMwFHahZkwB_vcfdLA9E437F1wx6ZKnHACBJpuB4sX1exZpuQ0Q_am2rZH7.jpg" alt="Водопады"></div></div>
+  </div></section>
+
+  <section class="page-section page-section-light" id="practical"><div class="section-container"><div style="text-align: center; margin-bottom: 3rem;"><span class="section-badge">Информация</span><h2 class="section-title">Посещение теснины</h2><p class="section-desc" style="margin: 0.8rem auto 0;">Транспорт, стоимость билетов, режим работы и контактные данные администрации</p></div>
+    <div class="practical-info-grid"><div class="practical-card"><h3>Стоимость и время</h3><ul><li>Взрослые <span>600 ₽</span></li><li>Дети 7-10 лет <span>300 ₽</span></li><li>Дошкольники <span>Бесплатно</span></li><li>Режим работы <span>Ежедневно 09:00-19:00</span></li></ul></div><div class="practical-card"><h3>Транспорт</h3><ul><li>Авто <span>Через п. Каменномостский, парковка у выезда</span></li><li>Автобус <span>~1 час от Майкопа</span></li><li>Электричка <span>До ст. Хаджох из Белореченска</span></li><li>Пешком <span>Вдоль реки Белой по тропам</span></li></ul></div><div class="practical-card"><h3>Контакты</h3><ul><li>Телефон <span>+7 (918) 222-40-97</span></li><li>Сайт <span>armola.ru/gory/4/hadzhohskaja-tesnina.html</span></li><li>Адрес <span>п. Каменномостский, Адыгея</span></li><li>Инфраструктура <span>Мосты, лестницы, скамейки, свет</span></li></ul></div><div class="practical-card"><h3>Рекомендации</h3><ul><li>Обувь <span>Удобная, нескользкая</span></li><li>Безопасность <span>Не спускаться за ограждения</span></li><li>Экология <span>Уносить мусор с собой</span></li><li>Фото <span>Лучшие кадры с подвесного моста</span></li></ul></div></div>
+  </div></section>
+
+  <footer class="page-footer"><div class="footer-container"><div class="footer-grid"><div class="footer-brand">
+    <!-- ✅ ЛОГОТИП В ПОДВАЛЕ -->
+    <a href="index.html" class="footer-logo">
+      <img src="лого.jpg" alt="Логотип" class="footer-logo-img">
+      <span class="footer-logo-text">Экопросвещение</span>
+    </a>
+    <p class="footer-desc">Образовательный портал об ООПТ Республики Адыгея. Сохраняем природу через просвещение и экотуризм.</p>
+    <div class="footer-socials"><a href="#" class="footer-social-link" aria-label="VK">VK</a><a href="#" class="footer-social-link" aria-label="Telegram">TG</a><a href="#" class="footer-social-link" aria-label="YouTube">YT</a></div>
+  </div><div class="footer-col"><h4>Навигация</h4><ul class="footer-links"><li><a href="index.html">← Главная страница</a></li><li><a href="#about">О теснине</a></li><li><a href="#wildlife">Природа</a></li><li><a href="#routes">Тропы</a></li><li><a href="#challenges">Проблемы</a></li><li><a href="#gallery">Галерея</a></li><li><a href="#practical">Практика</a></li></ul></div><div class="footer-col"><h4>Контакты</h4><div class="footer-contact-item"><span>п. Каменномостский, Майкопский район, Адыгея</span></div><div class="footer-contact-item"><span>+7 (918) 222-40-97</span></div><div class="footer-contact-item"><span>info@ecoprosveshenie.ru</span></div><div class="footer-contact-item"><span>ecoprosveshenie.ru</span></div></div></div><div class="footer-bottom"><div><div class="footer-divider"></div><p class="footer-copyright">© 2026 Экопросвещение | Республика Адыгея. Все права защищены. <a href="index.html">Вернуться на главную</a></p></div><p class="footer-made">Сделано для сохранения природы</p></div></div></footer>
+
+  <script>
+    window.addEventListener('scroll', () => { const nav = document.getElementById('pageNav'); if (window.scrollY > 80) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); });
+    const links = document.querySelectorAll('.page-nav-links a'); window.addEventListener('scroll', () => { const scrollPos = window.scrollY + 120; links.forEach(link => { const target = document.querySelector(link.getAttribute('href')); if (target && scrollPos >= target.offsetTop && scrollPos < target.offsetTop + target.offsetHeight) { links.forEach(l => l.classList.remove('active')); link.classList.add('active'); } }); });
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }; const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } }); }, observerOptions);
+    document.querySelectorAll('.wildlife-card, .route-card, .challenge-card, .practical-card, .gallery-item').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'all 0.5s var(--ease)'; observer.observe(el); });
+  </script>
+</body>
+</html>

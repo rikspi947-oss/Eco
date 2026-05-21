@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Экологические проблемы | Республика Адыгея</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary: #2d6a4f; --primary-dark: #1b4332; --primary-light: #40916c; --accent: #d4a373; --glass-scrolled: rgba(255,255,255,0.92); --text-muted: #52796f; --ease: cubic-bezier(0.22,1,0.36,1); --nav-height: 72px; --danger: #c0392b; --warning: #e67e22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #f4f6f8; color: #1b4332; line-height: 1.6; overflow-x: hidden; }
+
+    @keyframes ornament-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse-danger { 0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4); } 50% { box-shadow: 0 0 0 15px rgba(192,57,43,0); } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+    .navbar { position: fixed; top: 0; left: 0; right: 0; width: 100%; height: var(--nav-height); z-index: 10000; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; }
+    .navbar::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%232d6a4f' stroke-width='1.5'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.1; pointer-events: none; z-index: 0; animation: ornament-scroll 20s linear infinite; }
+    .navbar.scrolled { height: 60px; background: var(--glass-scrolled); box-shadow: 0 4px 20px rgba(27,67,50,0.1); }
+    .nav-container { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    
+    .navbar-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: #fff; transition: opacity 0.3s var(--ease); }
+    .navbar-logo:hover { opacity: 0.9; }
+    .logo-img { width: 44px; height: 44px; border-radius: 11px; object-fit: cover; box-shadow: 0 3px 10px rgba(192,57,43,0.2); transition: all 0.3s var(--ease); animation: float 4s ease-in-out infinite; flex-shrink: 0; background: #fff; }
+    .navbar.scrolled .logo-img { width: 34px; height: 34px; border-radius: 8px; animation: none; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.3); transition: font-size 0.3s ease, color 0.3s ease, text-shadow 0.3s ease; white-space: nowrap; }
+    .navbar.scrolled .navbar-logo { color: var(--primary); }
+    .navbar.scrolled .logo-text { font-size: 1rem; text-shadow: none; }
+    
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; align-items: center; }
+    .nav-links a { color: rgba(255,255,255,0.9); text-decoration: none; font-weight: 500; font-size: 0.88rem; padding: 0.4rem 1rem; border-radius: 20px; transition: all 0.25s var(--ease); position: relative; overflow: hidden; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
+    .nav-links a::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.25); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%; }
+    .nav-links a:hover::before, .nav-links a.active::before { width: 100%; height: 100%; }
+    .nav-links a:hover, .nav-links a.active { color: #fff; z-index: 1; }
+    .navbar.scrolled .nav-links a { color: var(--primary); font-size: 0.82rem; padding: 0.3rem 0.8rem; }
+    .navbar.scrolled .nav-links a::before { background: rgba(45,106,79,0.1); }
+    .navbar.scrolled .nav-links a:hover, .navbar.scrolled .nav-links a.active { color: #fff; background: var(--danger); }
+    
+    .mobile-menu { display: none; font-size: 1.5rem; cursor: pointer; color: #fff; background: none; border: none; padding: 0.4rem; transition: transform 0.2s var(--ease); }
+    .mobile-menu:hover { transform: scale(1.1); }
+    .navbar.scrolled .mobile-menu { color: var(--primary); }
+    @media (max-width: 768px) {
+      .nav-links { position: absolute; top: 100%; left: 0; width: 100%; background: var(--glass-scrolled); backdrop-filter: blur(16px); flex-direction: column; padding: 1rem 2rem; gap: 0.8rem; transform: translateY(-15px); opacity: 0; pointer-events: none; transition: all 0.4s var(--ease); box-shadow: 0 12px 28px rgba(0,0,0,0.08); }
+      .nav-links.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+      .nav-links a { width: 100%; justify-content: center; padding: 0.6rem; }
+      .mobile-menu { display: block; }
+    }
+
+    .hero-problems { position: relative; width: 100%; min-height: 70vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: linear-gradient(135deg, #1b4332 0%, #2d3436 100%); padding-top: var(--nav-height); }
+    .hero-problems::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('слайд_шоу/1.jpg'); background-size: cover; background-position: center; opacity: 0.25; }
+    .hero-problems::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(27,67,50,0.7) 0%, rgba(27,67,50,0.5) 50%, rgba(27,67,50,0.85) 100%); }
+    .hero-content { position: relative; z-index: 2; text-align: center; color: white; padding: 2rem; max-width: 900px; animation: fadeInUp 1s var(--ease) both; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(192,57,43,0.9); color: white; padding: 0.5rem 1.4rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; animation: pulse-danger 2s infinite; }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5.5vw, 4.5rem); margin-bottom: 1.2rem; line-height: 1.15; text-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+    .hero-subtitle { font-size: clamp(1.1rem, 2.5vw, 1.3rem); opacity: 0.9; line-height: 1.6; max-width: 700px; margin: 0 auto; }
+    .hero-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 3rem; flex-wrap: wrap; }
+    .stat-item { text-align: center; animation: scaleIn 0.6s var(--ease) both; }
+    .stat-item:nth-child(1) { animation-delay: 0.1s; } .stat-item:nth-child(2) { animation-delay: 0.2s; } .stat-item:nth-child(3) { animation-delay: 0.3s; }
+    .stat-number { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 0.85rem; opacity: 0.7; margin-top: 0.3rem; }
+
+    .overview-section { background: #fff; padding: 5rem 2rem; position: relative; }
+    .overview-container { max-width: 1100px; margin: 0 auto; }
+    .overview-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, var(--warning), var(--danger)); color: white; padding: 0.5rem 1.4rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 2.5rem; animation: slideInLeft 0.8s var(--ease) both; }
+    .overview-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.5rem); color: var(--primary-dark); margin-bottom: 1.5rem; line-height: 1.2; text-align: center; animation: fadeInUp 0.8s var(--ease) both; animation-delay: 0.2s; opacity: 0; }
+    
+    .overview-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-bottom: 5rem; opacity: 0; transform: translateY(20px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+    .overview-row.visible { opacity: 1; transform: translateY(0); }
+    .overview-row:nth-child(even) .overview-content { order: 2; }
+    .overview-row:nth-child(even) .overview-image { order: 1; }
+    
+    .overview-content { padding: 1.5rem; border-radius: 16px; background: linear-gradient(145deg, #ffffff, #f8fafc); border: 1px solid rgba(45,106,79,0.08); box-shadow: 0 2px 12px rgba(45,106,79,0.04); transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease); }
+    .overview-content:hover { box-shadow: 0 4px 20px rgba(45,106,79,0.08); transform: translateY(-2px); }
+    
+    .overview-subtitle { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; }
+    .overview-subtitle span { font-size: 1.8rem; }
+    .overview-text { color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem; }
+    
+    .overview-list { list-style: none; }
+    .overview-list li { display: flex; align-items: flex-start; gap: 0.8rem; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; padding: 0.6rem 0.8rem; border-radius: 8px; transition: background 0.2s var(--ease), transform 0.2s var(--ease); }
+    .overview-list li:hover { background: rgba(45,106,79,0.04); transform: translateX(3px); }
+    .overview-list li strong { color: var(--primary-dark); min-width: 120px; flex-shrink: 0; }
+    
+    .overview-image { border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(27,67,50,0.12); border: 3px solid #fff; transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease); }
+    .overview-image:hover { box-shadow: 0 25px 70px rgba(27,67,50,0.18); transform: translateY(-3px); }
+    .overview-image img { width: 100%; height: 380px; object-fit: cover; transition: transform 0.6s var(--ease); }
+    .overview-image img:hover { transform: scale(1.03); }
+    
+    @media (max-width: 900px) { 
+      .overview-row { grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem; }
+      .overview-row:nth-child(even) .overview-content { order: 1; }
+      .overview-row:nth-child(even) .overview-image { order: 2; }
+      .overview-image img { height: 300px; }
+    }
+
+    .tabs-section { background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); padding: 5rem 2rem 6rem; position: relative; }
+    .tabs-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent, var(--danger), var(--warning), var(--danger), transparent); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+    .tabs-header { text-align: center; max-width: 800px; margin: 0 auto 3rem; }
+    .tabs-header h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.5rem); color: var(--primary-dark); margin-bottom: 0.8rem; animation: fadeInUp 0.8s var(--ease) both; }
+    .tabs-header p { color: var(--text-muted); font-size: 1.05rem; animation: fadeInUp 0.8s var(--ease) both; animation-delay: 0.2s; opacity: 0; }
+
+    .tabs-nav { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; max-width: 1100px; margin: 0 auto 2.5rem; }
+    .tab-btn { padding: 0.75rem 1.5rem; border-radius: 50px; border: 2px solid rgba(45,106,79,0.2); background: white; color: var(--primary-dark); font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.3s var(--ease); display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Inter', sans-serif; }
+    .tab-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(45,106,79,0.15); }
+    .tab-btn.active { background: var(--danger); color: white; border-color: var(--danger); box-shadow: 0 4px 16px rgba(192,57,43,0.3); animation: pulse-danger 2s infinite; }
+
+    .tabs-container { max-width: 1100px; margin: 0 auto; }
+    .tab-panel { display: none; animation: fadeInUp 0.5s var(--ease) both; }
+    .tab-panel.active { display: block; }
+
+    .tab-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 15px 50px rgba(27,67,50,0.1); transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+    .tab-card:hover { transform: translateY(-5px); box-shadow: 0 25px 70px rgba(27,67,50,0.15); }
+    
+    .tab-slideshow { position: relative; height: 550px; overflow: hidden; }
+    .slide-item { position: absolute; inset: 0; opacity: 0; transition: opacity 1s var(--ease); }
+    .slide-item.active { opacity: 1; }
+    .slide-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 6s var(--ease); }
+    .slide-item.active img { transform: scale(1.05); }
+    .slide-item::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.6)); }
+    
+    .slide-caption { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); padding: 0.8rem 2rem; border-radius: 30px; color: white; font-size: 0.95rem; font-weight: 500; z-index: 2; opacity: 0; transition: opacity 0.5s var(--ease); }
+    .slide-item.active .slide-caption { opacity: 1; }
+    
+    .slideshow-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 0.6rem; z-index: 3; }
+    .slideshow-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s var(--ease); }
+    .slideshow-dot.active { background: white; width: 35px; border-radius: 6px; }
+    .slideshow-dot:hover { background: rgba(255,255,255,0.8); }
+    
+    .slideshow-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.4); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; cursor: pointer; transition: all 0.3s var(--ease); z-index: 3; }
+    .slideshow-nav:hover { background: rgba(255,255,255,0.4); transform: translateY(-50%) scale(1.15); }
+    .slideshow-nav.prev { left: 20px; } .slideshow-nav.next { right: 20px; }
+
+    .tab-card-content { padding: 3.5rem 4rem; }
+    .tab-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; gap: 2rem; }
+    .tab-card-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); line-height: 1.3; }
+    .tab-severity-badge { padding: 0.5rem 1.4rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; color: white; white-space: nowrap; flex-shrink: 0; }
+    .sev-critical { background: var(--danger); } .sev-high { background: var(--warning); } .sev-medium { background: var(--primary-light); }
+    .tab-card-text { color: var(--text-muted); font-size: 1.05rem; line-height: 1.9; margin-bottom: 1.5rem; }
+    
+    .tab-card-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 2.5rem; }
+    .tab-stat { background: #f0fdf4; border-radius: 14px; padding: 1.5rem 1rem; text-align: center; border: 1.5px solid rgba(45,106,79,0.12); transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); }
+    .tab-stat:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(45,106,79,0.1); }
+    .tab-stat-number { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--danger); }
+    .tab-stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem; line-height: 1.4; }
+
+    .tab-card-details { background: #f8fafc; border-radius: 14px; padding: 2rem; border-left: 5px solid var(--primary); margin-bottom: 1.5rem; transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease); border: 1px solid rgba(45,106,79,0.08); }
+    .tab-card-details:hover { transform: translateX(5px); box-shadow: 0 4px 16px rgba(45,106,79,0.06); }
+    .tab-card-details h4 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--primary-dark); margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 2px solid rgba(45,106,79,0.1); }
+    .tab-card-details ul { list-style: none; }
+    .tab-card-details ul li { position: relative; padding-left: 1.5rem; margin-bottom: 0.9rem; font-size: 0.95rem; color: var(--text-muted); line-height: 1.7; transition: transform 0.3s var(--ease); }
+    .tab-card-details ul li:hover { transform: translateX(5px); }
+    .tab-card-details ul li::before { content: ''; position: absolute; left: 0; top: 0.7rem; width: 8px; height: 8px; border-radius: 50%; background: var(--primary-light); }
+    .tab-card-details ul li strong { color: var(--primary-dark); }
+
+    @media (max-width: 768px) {
+      .tab-slideshow { height: 350px; }
+      .tab-card-content { padding: 2rem 1.5rem; }
+      .tab-card-header { flex-direction: column; gap: 1rem; }
+      .tab-card-title { font-size: 1.6rem; }
+      .tab-card-stats { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+      .tab-btn { padding: 0.6rem 1rem; font-size: 0.8rem; }
+      .slideshow-nav { width: 42px; height: 42px; font-size: 1.1rem; }
+      .tab-card-details { padding: 1.5rem; }
+    }
+    @media (max-width: 480px) { .tab-card-stats { grid-template-columns: 1fr; } .tab-slideshow { height: 280px; } }
+
+    .site-footer { background: var(--primary-dark); color: rgba(255,255,255,0.85); padding: 5rem 2rem 2rem; position: relative; overflow: hidden; }
+    .site-footer::before { content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 2 L38 20 L20 38 L2 20 Z' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3C/svg%3E"); background-size: 40px 40px; opacity: 0.03; pointer-events: none; z-index: 0; animation: ornament-scroll 30s linear infinite; }
+    .site-footer::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), var(--primary-light), var(--accent), transparent); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+    .footer-container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 4rem; }
+    .footer-brand { max-width: 320px; }
+    
+    .footer-logo { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; margin-bottom: 1.2rem; }
+    .footer-logo-img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; transition: transform 0.3s var(--ease); animation: float 4s ease-in-out infinite; }
+    .footer-logo:hover .footer-logo-img { transform: scale(1.08); }
+    .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: #fff; }
+    .footer-desc { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.65); margin-bottom: 1.8rem; }
+    .social-links { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .social-links a { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.8rem; transition: all 0.3s var(--ease); position: relative; overflow: hidden; }
+    .social-links a::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: var(--accent); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s; pointer-events: none; z-index: 0; max-width: 150%; max-height: 150%; }
+    .social-links a:hover::before { width: 100%; height: 100%; }
+    .social-links a span { position: relative; z-index: 1; }
+    .social-links a:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 6px 15px rgba(212,163,115,0.4); }
+    .footer-col h4 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #fff; margin-bottom: 1.2rem; position: relative; padding-bottom: 0.8rem; }
+    .footer-col h4::after { content: ''; position: absolute; bottom: 0; left: 0; width: 45px; height: 2px; background: var(--accent); border-radius: 2px; transition: width 0.3s var(--ease); }
+    .footer-col:hover h4::after { width: 80px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.9rem; }
+    .footer-col ul li a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.95rem; transition: all 0.3s var(--ease); display: block; position: relative; }
+    .footer-col ul li a::before { content: '->'; position: absolute; left: -18px; opacity: 0; transition: all 0.3s var(--ease); color: var(--accent); }
+    .footer-col ul li a:hover { color: var(--accent); transform: translateX(8px); }
+    .footer-col ul li a:hover::before { opacity: 1; left: -14px; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; text-align: center; }
+    .footer-divider { width: 80px; height: 3px; margin: 0 auto 1.2rem; background: linear-gradient(90deg, transparent, var(--accent), transparent); border-radius: 2px; animation: shimmer 3s linear infinite; }
+    .footer-bottom p { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+    @media (max-width: 992px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; } }
+    @media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-brand { max-width: 100%; } .social-links { justify-content: center; } .footer-col h4::after { left: 50%; transform: translateX(-50%); } .footer-col ul li a:hover { transform: translateX(0); } }
+
+    .back-to-main { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 0.9rem 2rem; border-radius: 30px; text-decoration: none; font-weight: 600; transition: all 0.3s var(--ease); box-shadow: 0 4px 16px rgba(45,106,79,0.3); margin-top: 2rem; }
+    .back-to-main:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(45,106,79,0.4); }
+    .back-to-main svg { width: 18px; height: 18px; transition: transform 0.3s var(--ease); }
+    .back-to-main:hover svg { transform: translateX(-4px); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="navbar-logo">
+        <img src="лого.jpg" alt="Логотип" class="logo-img">
+        <div class="logo-text">
+          <span class="logo-main">Экопросвещение</span>
+          <span class="logo-sub">Республика Адыгея</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Главная</a></li>
+        <li><a href="index.html#about">Об объектах</a></li>
+        <li><a href="index.html#other-reserves">Все объекты</a></li>
+        <li><a href="#" class="active">Проблемы</a></li>
+        <li><a href="index.html#map-section">Карта</a></li>
+      </ul>
+      <button class="mobile-menu" aria-label="Открыть меню">=</button>
+    </div>
+  </nav>
+
+  <section class="hero-problems">
+    <div class="hero-content">
+      <div class="hero-badge">Тревожная ситуация</div>
+      <h1 class="hero-title">Экологические проблемы Адыгеи</h1>
+      <p class="hero-subtitle">Уникальная природа Республики Адыгея сталкивается с серьёзными угрозами. Бездействие сегодня — потеря уникальных экосистем завтра.</p>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-number">7+</div><div class="stat-label">ООПТ под угрозой</div></div>
+        <div class="stat-item"><div class="stat-number">30%</div><div class="stat-label">Рост загрязнения за 5 лет</div></div>
+        <div class="stat-item"><div class="stat-number">5</div><div class="stat-label">Критических проблем</div></div>
+      </div>
+      <a href="index.html" class="back-to-main"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m7 7l-7 7m7-7l-7 7" /></svg> Вернуться на главную</a>
+    </div>
+  </section>
+
+  <section class="overview-section">
+    <div class="overview-container">
+      <div class="overview-badge">Общая картина</div>
+      <h2 class="overview-title">Проблемы Республики Адыгея</h2>
+      <p class="overview-text" style="text-align:center; max-width:800px; margin: 0 auto 3rem; padding: 1rem; border-radius: 12px; background: linear-gradient(145deg, #ffffff, #f8fafc); border: 1px solid rgba(45,106,79,0.08);">В Республике Адыгея существуют экологические проблемы, связанные с загрязнением атмосферного воздуха, водных ресурсов, деградацией почв и сокращением биологического разнообразия. Эти проблемы обусловлены антропогенной нагрузкой на экосистемы региона, включая развитие туризма, строительство инфраструктуры и промышленную деятельность.</p>
+      
+      <div class="overview-row">
+        <div class="overview-content">
+          <h3 class="overview-subtitle"><span>Атмосферный воздух</span></h3>
+          <ul class="overview-list">
+            <li><strong>Источники загрязнения:</strong> выбросы от автотранспорта, предприятий жилищно-коммунального хозяйства, сельского хозяйства и промышленности.</li>
+            <li><strong>Накопление примесей:</strong> вредные вещества переносятся воздушными потоками, оседают на почве и в водоёмах, усиливая негативное воздействие на экосистемы.</li>
+            <li><strong>Локальные проблемы:</strong> высокая концентрация загрязняющих веществ отмечается в Майкопе и населённых пунктах вдоль дорог с интенсивным движением.</li>
+          </ul>
+        </div>
+        <div class="overview-image"><img src="слайд_шоу/1.jpg" alt="Загрязнение воздуха"></div>
+      </div>
+
+      <div class="overview-row">
+        <div class="overview-content">
+          <h3 class="overview-subtitle"><span>Водные ресурсы</span></h3>
+          <ul class="overview-list">
+            <li><strong>Загрязнение поверхностных вод:</strong> в реки поступают загрязняющие вещества с поверхностными стоками, включая минеральные удобрения, ядохимикаты и горюче-смазочные материалы.</li>
+            <li><strong>Заиливание рек:</strong> строительство на берегах и зарегулирование стока дамбами приводит к заболачиванию и трансформации рек в стоячие водоёмы.</li>
+            <li><strong>Качество воды:</strong> строительство Краснодарского водохранилища вызвало подъём грунтовых вод и ухудшение качества воды в колодцах.</li>
+          </ul>
+        </div>
+        <div class="overview-image"><img src="вотопады_руфабго/гл.jpg" alt="Загрязнение воды"></div>
+      </div>
+
+      <div class="overview-row">
+        <div class="overview-content">
+          <h3 class="overview-subtitle"><span>Почвы</span></h3>
+          <ul class="overview-list">
+            <li><strong>Эрозия:</strong> на наклонных равнинах под воздействием воды легко разрушается плодородный слой почв, что затрагивает практически все пахотные земли.</li>
+            <li><strong>Химическое загрязнение:</strong> содержание тяжёлых металлов, пестицидов и других токсичных веществ превышает предельно допустимые концентрации.</li>
+            <li><strong>Деградация:</strong> слитизация и переувлажнение почв в зоне влияния Краснодарского водохранилища затрудняют их сельскохозяйственное использование.</li>
+          </ul>
+        </div>
+        <div class="overview-image"><img src="большой_тхач/гл.jpg" alt="Деградация почв"></div>
+      </div>
+
+      <div class="overview-row">
+        <div class="overview-content">
+          <h3 class="overview-subtitle"><span>Живые организмы</span></h3>
+          <ul class="overview-list">
+            <li><strong>Сокращение численности:</strong> уменьшается популяция медведя, серны, тура, а также пушных зверей — зайца, лисицы, енота.</li>
+            <li><strong>Редкие виды:</strong> в Красную книгу Республики Адыгея занесено 82 вида позвоночных животных, включая рыб, земноводных, пресмыкающихся и птиц.</li>
+            <li><strong>Утрата мест обитания:</strong> строительство инфраструктуры на охраняемых территориях приводит к трансформации уникальных экосистем.</li>
+          </ul>
+        </div>
+        <div class="overview-image"><img src="Хаджох/гл.jpg" alt="Биоразнообразие"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabs-section" id="tabs">
+    <div class="tabs-header">
+      <h2>Детальный обзор проблем</h2>
+      <p>Выберите вкладку для получения подробной информации о конкретной экологической проблеме</p>
+    </div>
+
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="openTab(event, 'tab-shapsug')">Шапсугское водохранилище</button>
+      <button class="tab-btn" onclick="openTab(event, 'tab-insects')">Насекомые-вредители</button>
+      <button class="tab-btn" onclick="openTab(event, 'tab-krasnodar')">Краснодарское водохранилище</button>
+      <button class="tab-btn" onclick="openTab(event, 'tab-logging')">Вырубка лесов</button>
+      <button class="tab-btn" onclick="openTab(event, 'tab-leopard')">Восстановление леопардов</button>
+    </div>
+
+    <div class="tabs-container">
+      <div id="tab-shapsug" class="tab-panel active">
+        <div class="tab-card">
+          <div class="tab-slideshow" data-autoplay="5000">
+            <div class="slide-item active"><img src="Проблемы Республики Адыгея/Шапсугское водохранилище/scale_2400 (1).jpg" alt="Шапсугское водохранилище"><div class="slide-caption">Общий вид водохранилища</div></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Шапсугское водохранилище/scale_2400 (4).jpg" alt="Разрушение сооружений"><div class="slide-caption">Разрушение гидротехнических сооружений</div></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Шапсугское водохранилище/scale_2400 (3).jpg" alt="Загрязнение"><div class="slide-caption">Загрязнение прибрежной зоны</div></div>
+            <button class="slideshow-nav prev" onclick="changeSlide(this, -1)">❮</button>
+            <button class="slideshow-nav next" onclick="changeSlide(this, 1)">❯</button>
+            <div class="slideshow-controls"></div>
+          </div>
+          <div class="tab-card-content">
+            <div class="tab-card-header"><h3 class="tab-card-title">Шапсугское водохранилище</h3><span class="tab-severity-badge sev-critical">Критическая ситуация</span></div>
+            <p class="tab-card-text">Шапсугское водохранилище, расположенное в левобережной пойме реки Кубани, было построено в 1939–1952 годах для защиты от наводнений и обеспечения сельского хозяйства. Сегодня объект находится в аварийном состоянии и требует срочной модернизации.</p>
+            <p class="tab-card-text">За более чем 70 лет эксплуатации на водохранилище произошли многочисленные разрушения: осадки гребня, оползневые деформации, износ гидромеханического оборудования. Дно местами сильно заилено, что снижает функциональную ёмкость объекта.</p>
+            <div class="tab-card-stats">
+              <div class="tab-stat"><div class="tab-stat-number">1939</div><div class="tab-stat-label">год начала проектирования</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">1952</div><div class="tab-stat-label">год ввода в эксплуатацию</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">70+</div><div class="tab-stat-label">лет эксплуатации</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">3x</div><div class="tab-stat-label">недостаток воды от нормы</div></div>
+            </div>
+            <div class="tab-card-details">
+              <h4>Технические и экологические проблемы</h4>
+              <ul>
+                <li><strong>Износ сооружений:</strong> разрушение откосов, промоины на рисберме, аварийное состояние шлюзов и понура.</li>
+                <li><strong>Заиливание:</strong> снижение объёма водохранилища и нарушение естественных процессов самоочищения воды.</li>
+                <li><strong>Нарушение экосистемы:</strong> инвазивные виды акации теснят коренную растительность, затрудняя восстановление пойменных лесов.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-insects" class="tab-panel">
+        <div class="tab-card">
+          <div class="tab-slideshow" data-autoplay="5000">
+            <div class="slide-item active"><img src="Проблемы Республики Адыгея/Насекомые вредитеи. Урон экосистеме/scale_1200 (1).jpg" alt="Усыхание леса"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Насекомые вредитеи. Урон экосистеме/1646792235403794_J5TkYVMY.jpg" alt="Поврежденные деревья"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Насекомые вредитеи. Урон экосистеме/Image09.29.42.jpeg" alt="Последствия"></div>
+            <button class="slideshow-nav prev" onclick="changeSlide(this, -1)">❮</button>
+            <button class="slideshow-nav next" onclick="changeSlide(this, 1)">❯</button>
+            <div class="slideshow-controls"></div>
+          </div>
+          <div class="tab-card-content">
+            <div class="tab-card-header"><h3 class="tab-card-title">Насекомые-вредители леса</h3><span class="tab-severity-badge sev-high">Высокая угроза</span></div>
+            <p class="tab-card-text">Леса Адыгеи сталкиваются с серьёзной угрозой со стороны инвазивных и аборигенных видов насекомых-вредителей. По данным мониторинга, площадь поражённых насаждений исчисляется тысячами гектаров.</p>
+            <p class="tab-card-text">Особую опасность представляют клоп-кружевница дубовый, огнёвка самшитовая и каштановая орехотворка, которые наносят ущерб дубовым, самшитовым и каштановым насаждениям.</p>
+            <div class="tab-card-stats">
+              <div class="tab-stat"><div class="tab-stat-number">23 000</div><div class="tab-stat-label">га поражено клопом-кружевницей</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">6 900</div><div class="tab-stat-label">га очагов каштановой орехотворки</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">190</div><div class="tab-stat-label">скворечников установлено в 2026</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">2015</div><div class="tab-stat-label">год обнаружения огнёвки самшитовой</div></div>
+            </div>
+            <div class="tab-card-details">
+              <h4>Основные виды вредителей</h4>
+              <ul>
+                <li><strong>Клоп-кружевница дубовый:</strong> североамериканский вид, высасывающий сок из листьев дуба, вызывая их преждевременное опадание.</li>
+                <li><strong>Огнёвка самшитовая:</strong> уничтожает реликтовые самшитовые леса, впервые обнаружена в Адыгее в 2015 году.</li>
+                <li><strong>Каштановая орехотворка:</strong> поражает каштаны, гусеницы минирующей моли наносят дополнительный ущерб листве.</li>
+              </ul>
+            </div>
+            <div class="tab-card-details" style="border-left-color: var(--warning);">
+              <h4>Меры борьбы и профилактики</h4>
+              <ul>
+                <li><strong>Биологический метод:</strong> привлечение естественных врагов насекомых — птиц, установка скворечников и гнездовий.</li>
+                <li><strong>Мониторинг:</strong> регулярные наземные наблюдения за санитарным состоянием лесного фонда.</li>
+                <li><strong>Комплексная защита:</strong> использование феромонных ловушек и внутристволовых инъекций для защиты ценных пород.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-krasnodar" class="tab-panel">
+        <div class="tab-card">
+          <div class="tab-slideshow" data-autoplay="5000">
+            <div class="slide-item active"><img src="Проблемы Республики Адыгея/Краснодарское водохранилище/Фото/maxresdefault.jpg" alt="Краснодарское водохранилище"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Краснодарское водохранилище/Фото/Pshikuijabl_and_Krasnodar_reservoir,_aerial_view.jpg" alt="Загрязнение"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Краснодарское водохранилище/Фото/Слайд1.JPG" alt="Эрозия"></div>
+            <button class="slideshow-nav prev" onclick="changeSlide(this, -1)">❮</button>
+            <button class="slideshow-nav next" onclick="changeSlide(this, 1)">❯</button>
+            <div class="slideshow-controls"></div>
+          </div>
+          <div class="tab-card-content">
+            <div class="tab-card-header"><h3 class="tab-card-title">Краснодарское водохранилище</h3><span class="tab-severity-badge sev-critical">Критическая ситуация</span></div>
+            <p class="tab-card-text">Краснодарское водохранилище, построенное в 1973 году, является крупнейшим на Северном Кавказе. Оно предназначено для защиты от наводнений, орошения рисовых систем и воспроизводства рыбных ресурсов Азовского моря.</p>
+            <p class="tab-card-text">Длительная эксплуатация объекта негативно отразилась на прилегающих землях Адыгеи: произошло затопление 25 тыс. га пахотных земель, деградация почв и изменение микроклимата региона.</p>
+            <div class="tab-card-stats">
+              <div class="tab-stat"><div class="tab-stat-number">1973</div><div class="tab-stat-label">год постройки</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">25 тыс.</div><div class="tab-stat-label">га затопленных пахотных земель</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">17 тыс.</div><div class="tab-stat-label">га деградированных почв</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">5-7</div><div class="tab-stat-label">баллов — критическое землетрясение</div></div>
+            </div>
+            <div class="tab-card-details">
+              <h4>Экологические и технические проблемы</h4>
+              <ul>
+                <li><strong>Загрязнение воды:</strong> накопление тяжёлых металлов, нефтепродуктов, пестицидов и азотных соединений; каждая третья проба воды не соответствует гигиеническим нормативам.</li>
+                <li><strong>Деградация почв:</strong> подъём грунтовых вод приводит к переувлажнению, снижению содержания гумуса и засолению земель на площади более 17 тыс. га.</li>
+                <li><strong>Потеря функциональности:</strong> обмеление из-за речных наносов прекратило судоходство, фиксируются большие потери воды на испарение.</li>
+              </ul>
+            </div>
+            <div class="tab-card-details" style="border-left-color: var(--danger);">
+              <h4>Угроза безопасности</h4>
+              <ul>
+                <li><strong>Сейсмическая опасность:</strong> водохранилище расположено в зоне с активным сейсмическим режимом; при землетрясении 5–7 баллов возможен развал плотины и катастрофическое затопление.</li>
+                <li><strong>Износ сооружений:</strong> значительная часть гидротехнических сооружений находится в аварийном состоянии, плотина не ремонтировалась капитально более 25 лет.</li>
+                <li><strong>Подтопление территорий:</strong> повышение уровня грунтовых вод приводит к постоянному подтоплению населённых пунктов и сельскохозяйственных земель.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-logging" class="tab-panel">
+        <div class="tab-card">
+          <div class="tab-slideshow" data-autoplay="5000">
+            <div class="slide-item active"><img src="Проблемы Республики Адыгея/Вырубка лесов/1.jpg" alt="Вырубка леса"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Вырубка лесов/2.jpg" alt="Поврежденный лес"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Вырубка лесов/3.jpg" alt="Восстановление"></div>
+            <button class="slideshow-nav prev" onclick="changeSlide(this, -1)">❮</button>
+            <button class="slideshow-nav next" onclick="changeSlide(this, 1)">❯</button>
+            <div class="slideshow-controls"></div>
+          </div>
+          <div class="tab-card-content">
+            <div class="tab-card-header"><h3 class="tab-card-title">Вырубка лесов</h3><span class="tab-severity-badge sev-high">Высокая угроза</span></div>
+            <p class="tab-card-text">Лесной фонд Республики Адыгея за последние 50 лет претерпел существенные изменения. Интенсификация лесопользования привела к превышению норм вырубки и утрате водоохранных функций лесов.</p>
+            <p class="tab-card-text">Ситуация усугубляется проблемами с лесовосстановлением, незаконными вырубками на особо охраняемых территориях, включая объекты Всемирного наследия «Западный Кавказ», а также усыханием деревьев из-за болезней и вредителей.</p>
+            <div class="tab-card-stats">
+              <div class="tab-stat"><div class="tab-stat-number">50 лет</div><div class="tab-stat-label">существенных изменений в лесах</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">300+</div><div class="tab-stat-label">деревьев вырублено в 2018 (самшит)</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">2002</div><div class="tab-stat-label">год указа о прекращении рубок</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">ЮНЕСКО</div><div class="tab-stat-label">угроза объекту «Западный Кавказ»</div></div>
+            </div>
+            <div class="tab-card-details">
+              <h4>Основные проблемы лесопользования</h4>
+              <ul>
+                <li><strong>Нерациональная эксплуатация:</strong> превышение норм вырубки, рубка водоохранных лесов малых рек, снижение объёмов лесовосстановления.</li>
+                <li><strong>Незаконные вырубки:</strong> случаи незаконной заготовки древесины на особо охраняемых территориях, включая памятники природы.</li>
+                <li><strong>Деградация экосистем:</strong> вырубка леса приводит к изменению растительного покрова, развитию эрозионных процессов и нарушению гидрологического режима.</li>
+              </ul>
+            </div>
+            <div class="tab-card-details" style="border-left-color: var(--warning);">
+              <h4>Последствия и меры реагирования</h4>
+              <ul>
+                <li><strong>Угроза биоразнообразию:</strong> многие уникальные экосистемы и редкие виды находятся под угрозой исчезновения.</li>
+                <li><strong>Законодательные меры:</strong> в 2002 году издан указ о прекращении рубок главного пользования, за исключением отдельных случаев.</li>
+                <li><strong>Контроль и профилактика:</strong> внедрение автоматизированной системы учёта древесины, привлечение общественности к мониторингу лесов.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-leopard" class="tab-panel">
+        <div class="tab-card">
+          <div class="tab-slideshow" data-autoplay="5000">
+            <div class="slide-item active"><img src="Проблемы Республики Адыгея/Востановление переднеазиатский леопард/427d9631fd8e3ff0d310f2e6c0998dc7.jpg" alt="Переднеазиатский леопард"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Востановление переднеазиатский леопард/e29c347728780a21597936398.jpeg" alt="Горные леса"></div>
+            <div class="slide-item"><img src="Проблемы Республики Адыгея/Востановление переднеазиатский леопард/S2_Semenov-Umar-_1_.jpg" alt="Программа восстановления"></div>
+            <button class="slideshow-nav prev" onclick="changeSlide(this, -1)">❮</button>
+            <button class="slideshow-nav next" onclick="changeSlide(this, 1)">❯</button>
+            <div class="slideshow-controls"></div>
+          </div>
+          <div class="tab-card-content">
+            <div class="tab-card-header"><h3 class="tab-card-title">Восстановление переднеазиатского леопарда</h3><span class="tab-severity-badge sev-medium">Успешная программа</span></div>
+            <p class="tab-card-text">Восстановление переднеазиатского леопарда — одна из самых амбициозных природоохранных программ в современной России. Республика Адыгея стала ключевой территорией, где этот редчайший хищник, истреблённый в середине XX века, вновь обретает свой дом.</p>
+            <p class="tab-card-text">В 2005 году была запущена федеральная программа восстановления популяции на Кавказе. В 2009 году построен Центр восстановления леопарда, где хищников готовят к самостоятельной жизни в дикой природе.</p>
+            <div class="tab-card-stats">
+              <div class="tab-stat"><div class="tab-stat-number">2005</div><div class="tab-stat-label">год запуска федеральной программы</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">12 га</div><div class="tab-stat-label">площадь Центра восстановления</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">12 из 15</div><div class="tab-stat-label">выпущенных леопардов адаптировались</div></div>
+              <div class="tab-stat"><div class="tab-stat-number">50</div><div class="tab-stat-label">цель — численность популяции к 2036</div></div>
+            </div>
+            <div class="tab-card-details">
+              <h4>Этапы программы восстановления</h4>
+              <ul>
+                <li><strong>Подготовка в Центре:</strong> леопарды, привезённые из Ирана, Туркмении и европейских зоопарков, проходят обучение охоте и избеганию человека.</li>
+                <li><strong>Выпуск в природу:</strong> с 2016 года 15 хищников выпущены в Кавказский заповедник и природный парк «Большой Тхач», 12 успешно адаптировались.</li>
+                <li><strong>Научный мониторинг:</strong> животные оснащены спутниковыми ошейниками, в лесах установлены фотоловушки для отслеживания перемещений.</li>
+              </ul>
+            </div>
+            <div class="tab-card-details" style="border-left-color: var(--primary-light);">
+              <h4>Результаты и перспективы</h4>
+              <ul>
+                <li><strong>Успешное размножение:</strong> учёные подтвердили появление потомства у выпущенных леопардов — первый в мире случай восстановления полностью исчезнувшей популяции крупного хищника.</li>
+                <li><strong>Расширение ареала:</strong> леопарды осваивают новые территории, включая природный парк «Большой Тхач» в Адыгее.</li>
+                <li><strong>Планы до 2036 года:</strong> формирование устойчивой популяции численностью не менее 50 особей в историческом ареале.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="лого.jpg" alt="Логотип" class="footer-logo-img">
+            <span class="footer-logo-text">Экопросвещение</span>
+          </a>
+          <p class="footer-desc">Образовательный портал об ООПТ Республики Адыгея. Мы верим, что знание — первый шаг к защите природы.</p>
+          <div class="social-links"><a href="#" class="footer-social-link" aria-label="VK">VK</a><a href="#" class="footer-social-link" aria-label="Telegram">TG</a><a href="#" class="footer-social-link" aria-label="YouTube">YT</a></div>
+        </div>
+        <div class="footer-col"><h4>Навигация</h4><ul><li><a href="index.html">Главная</a></li><li><a href="index.html#about">Об объектах</a></li><li><a href="index.html#other-reserves">Все объекты</a></li><li><a href="index.html#map-section">Карта</a></li></ul></div>
+        <div class="footer-col"><h4>Контакты</h4><ul><li>Майкоп, ул. Набережная, 12</li><li>+7 (8772) 55-55-55</li><li>info@ecoprosveshenie.ru</li></ul></div>
+        <div class="footer-col"><h4>Экстренные номера</h4><ul><li>112 — МЧС</li><li>8 (8772) 57-31-21 — Минприроды РА</li><li>8 (8772) 57-22-33 — Кавказский заповедник</li></ul></div>
+      </div>
+      <div class="footer-bottom"><div class="footer-divider"></div><p>© 2026 Экопросвещение | Республика Адыгея. Все права защищены.</p></div>
+    </div>
+  </footer>
+
+  <script>
+    const navbar = document.getElementById('navbar'), mobileBtn = document.querySelector('.mobile-menu'), navLinks = document.querySelector('.nav-links');
+    window.addEventListener('scroll', () => { window.scrollY > 50 ? navbar.classList.add('scrolled') : navbar.classList.remove('scrolled'); });
+    mobileBtn.addEventListener('click', () => { navLinks.classList.toggle('active'); mobileBtn.textContent = navLinks.classList.contains('active') ? 'X' : '='; });
+
+    function openTab(evt, tabId) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      evt.currentTarget.classList.add('active');
+      initSlideshowInTab(tabId);
+    }
+
+    function initSlideshowInTab(tabId) {
+      const tab = document.getElementById(tabId);
+      const slideshow = tab.querySelector('.tab-slideshow');
+      if (slideshow && !slideshow.dataset.initialized) { initSlideshow(slideshow); slideshow.dataset.initialized = 'true'; }
+    }
+
+    function initSlideshow(slideshow) {
+      const slides = slideshow.querySelectorAll('.slide-item'), controls = slideshow.querySelector('.slideshow-controls'), autoplayDelay = parseInt(slideshow.dataset.autoplay) || 5000;
+      slides.forEach((_, index) => { const dot = document.createElement('div'); dot.className = 'slideshow-dot' + (index === 0 ? ' active' : ''); dot.onclick = () => goToSlide(slideshow, index); controls.appendChild(dot); });
+      let currentSlide = 0;
+      const autoplay = setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; goToSlide(slideshow, currentSlide); }, autoplayDelay);
+      slideshow.addEventListener('mouseenter', () => clearInterval(autoplay));
+      slideshow.addEventListener('mouseleave', () => { setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; goToSlide(slideshow, currentSlide); }, autoplayDelay); });
+    }
+
+    function goToSlide(slideshow, index) {
+      const slides = slideshow.querySelectorAll('.slide-item'), dots = slideshow.querySelectorAll('.slideshow-dot');
+      slides.forEach(slide => slide.classList.remove('active')); dots.forEach(dot => dot.classList.remove('active'));
+      slides[index].classList.add('active'); dots[index].classList.add('active');
+    }
+
+    function changeSlide(button, direction) {
+      const slideshow = button.closest('.tab-slideshow'), slides = slideshow.querySelectorAll('.slide-item');
+      let currentIndex = 0; slides.forEach((slide, index) => { if (slide.classList.contains('active')) currentIndex = index; });
+      let newIndex = currentIndex + direction; if (newIndex < 0) newIndex = slides.length - 1; if (newIndex >= slides.length) newIndex = 0;
+      goToSlide(slideshow, newIndex);
+    }
+
+    const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -80px 0px' };
+    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } }); }, observerOptions);
+    document.querySelectorAll('.overview-row').forEach(row => { observer.observe(row); });
+    document.addEventListener('DOMContentLoaded', () => { const firstSlideshow = document.querySelector('.tab-slideshow'); if (firstSlideshow) initSlideshow(firstSlideshow); });
+  </script>
+</body>
+</html>
